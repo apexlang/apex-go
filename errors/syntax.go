@@ -5,19 +5,19 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/wapc/widl-go/language/ast"
-	"github.com/wapc/widl-go/language/location"
-	"github.com/wapc/widl-go/language/source"
+	"github.com/wapc/widl-go/ast"
+	"github.com/wapc/widl-go/location"
+	"github.com/wapc/widl-go/source"
 )
 
-func NewSyntaxError(s *source.Source, position int, description string) *Error {
+func NewSyntaxError(s *source.Source, position uint, description string) *Error {
 	l := location.GetLocation(s, position)
 	return NewError(
 		fmt.Sprintf("Syntax Error %s (%d:%d) %s\n\n%s", s.Name, l.Line, l.Column, description, highlightSourceAtLocation(s, l)),
 		[]ast.Node{},
 		"",
 		s,
-		[]int{position},
+		[]uint{position},
 		nil,
 	)
 }
@@ -50,11 +50,11 @@ func highlightSourceAtLocation(s *source.Source, l location.SourceLocation) stri
 		highlight += fmt.Sprintf("%s: %s\n", lpad(padLen, prevLineNum), printLine(lines[line-2]))
 	}
 	highlight += fmt.Sprintf("%s: %s\n", lpad(padLen, lineNum), printLine(lines[line-1]))
-	for i := 1; i < (2 + padLen + l.Column); i++ {
+	for i := 1; i < (2 + padLen + int(l.Column)); i++ {
 		highlight += " "
 	}
 	highlight += "^\n"
-	if line < len(lines) {
+	if int(line) < len(lines) {
 		highlight += fmt.Sprintf("%s: %s\n", lpad(padLen, nextLineNum), printLine(lines[line]))
 	}
 	return highlight

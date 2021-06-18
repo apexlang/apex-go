@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/wapc/widl-go/errors"
-	"github.com/wapc/widl-go/language/source"
+	"github.com/wapc/widl-go/source"
 )
 
 const (
@@ -21,6 +21,7 @@ const (
 	SPREAD
 	COLON
 	EQUALS
+	STAR
 	AT
 	BRACKET_L
 	BRACKET_R
@@ -39,9 +40,11 @@ const (
 // NAME -> keyword relationship
 const (
 	NAMESPACE = "namespace"
-	SCALAR    = "scalar"
+	IMPORT    = "import"
+	ALIAS     = "alias"
 	TYPE      = "type"
 	INTERFACE = "interface"
+	ROLE      = "role"
 	UNION     = "union"
 	ENUM      = "enum"
 	DIRECTIVE = "directive"
@@ -62,6 +65,7 @@ func init() {
 		TokenKind[SPREAD] = SPREAD
 		TokenKind[COLON] = COLON
 		TokenKind[EQUALS] = EQUALS
+		TokenKind[STAR] = STAR
 		TokenKind[AT] = AT
 		TokenKind[BRACKET_L] = BRACKET_L
 		TokenKind[BRACKET_R] = BRACKET_R
@@ -86,6 +90,7 @@ func init() {
 		tokenDescription[TokenKind[SPREAD]] = "..."
 		tokenDescription[TokenKind[COLON]] = ":"
 		tokenDescription[TokenKind[EQUALS]] = "="
+		tokenDescription[TokenKind[STAR]] = "*"
 		tokenDescription[TokenKind[AT]] = "@"
 		tokenDescription[TokenKind[BRACKET_L]] = "["
 		tokenDescription[TokenKind[BRACKET_R]] = "]"
@@ -106,16 +111,16 @@ func init() {
 // tokens: NAME, INT, FLOAT, and STRING.
 type Token struct {
 	Kind  int
-	Start int
-	End   int
+	Start uint
+	End   uint
 	Value string
 }
 
-type Lexer func(resetPosition int) (Token, error)
+type Lexer func(resetPosition uint) (Token, error)
 
 func Lex(s *source.Source) Lexer {
-	var prevPosition int
-	return func(resetPosition int) (Token, error) {
+	var prevPosition uint
+	return func(resetPosition uint) (Token, error) {
 		if resetPosition == 0 {
 			resetPosition = prevPosition
 		}
@@ -132,9 +137,9 @@ func Lex(s *source.Source) Lexer {
 // [_A-Za-z][_0-9A-Za-z]*
 // position: Points to the byte position in the byte array
 // runePosition: Points to the rune position in the byte array
-func readName(source *source.Source, position, runePosition int) Token {
+func readName(source *source.Source, position, runePosition uint) Token {
 	body := source.Body
-	bodyLength := len(body)
+	bodyLength := uint(len(body))
 	endByte := position + 1
 	endRune := runePosition + 1
 	kind := NAME
@@ -162,7 +167,7 @@ func readName(source *source.Source, position, runePosition int) Token {
 // or an int depending on whether a decimal point appears.
 // Int:   -?(0|[1-9][0-9]*)
 // Float: -?(0|[1-9][0-9]*)(\.[0-9]+)?((E|e)(+|-)?[0-9]+)?
-func readNumber(s *source.Source, start int, firstCode rune, codeLength int) (Token, error) {
+func readNumber(s *source.Source, start uint, firstCode rune, codeLength uint) (Token, error) {
 	code := firstCode
 	body := s.Body
 	position := start
@@ -220,7 +225,7 @@ func readNumber(s *source.Source, start int, firstCode rune, codeLength int) (To
 }
 
 // Returns the new position in the source after reading digits.
-func readDigits(s *source.Source, start int, firstCode rune, codeLength int) (int, error) {
+func readDigits(s *source.Source, start uint, firstCode rune, codeLength uint) (uint, error) {
 	body := s.Body
 	position := start
 	code := firstCode
@@ -236,22 +241,21 @@ func readDigits(s *source.Source, start int, firstCode rune, codeLength int) (in
 		}
 		return position, nil
 	}
-	var description string
-	description = fmt.Sprintf("Invalid number, expected digit but got: %v.", printCharCode(code))
+	description := fmt.Sprintf("Invalid number, expected digit but got: %v.", printCharCode(code))
 	return position, errors.NewSyntaxError(s, position, description)
 }
 
-func readString(s *source.Source, start int) (Token, error) {
+func readString(s *source.Source, start uint) (Token, error) {
 	body := s.Body
 	position := start + 1
 	runePosition := start + 1
 	chunkStart := position
 	var code rune
-	var n int
+	var n uint
 	var valueBuffer bytes.Buffer
 	for {
 		code, n = runeAt(body, position)
-		if position < len(body) &&
+		if position < uint(len(body)) &&
 			// not LineTerminator
 			code != 0x000A && code != 0x000D &&
 			// not Quote (")
@@ -269,31 +273,23 @@ func readString(s *source.Source, start int) (Token, error) {
 				switch code {
 				case '"':
 					valueBuffer.WriteRune('"')
-					break
 				case '/':
 					valueBuffer.WriteRune('/')
-					break
 				case '\\':
 					valueBuffer.WriteRune('\\')
-					break
 				case 'b':
 					valueBuffer.WriteRune('\b')
-					break
 				case 'f':
 					valueBuffer.WriteRune('\f')
-					break
 				case 'n':
 					valueBuffer.WriteRune('\n')
-					break
 				case 'r':
 					valueBuffer.WriteRune('\r')
-					break
 				case 't':
 					valueBuffer.WriteRune('\t')
-					break
 				case 'u':
 					// Check if there are at least 4 bytes available
-					if len(body) <= position+4 {
+					if uint(len(body)) <= position+4 {
 						return Token{}, errors.NewSyntaxError(s, runePosition,
 							fmt.Sprintf("Invalid character escape sequence: "+
 								"\\u%v", string(body[position+1:])))
@@ -312,7 +308,6 @@ func readString(s *source.Source, start int) (Token, error) {
 					valueBuffer.WriteRune(charCode)
 					position += 4
 					runePosition += 4
-					break
 				default:
 					return Token{}, errors.NewSyntaxError(s, runePosition,
 						fmt.Sprintf(`Invalid character escape sequence: \\%c.`, code))
@@ -338,7 +333,7 @@ func readString(s *source.Source, start int) (Token, error) {
 // readBlockString reads a block string token from the source file.
 //
 // """("?"?(\\"""|\\(?!=""")|[^"\\]))*"""
-func readBlockString(s *source.Source, start int) (Token, error) {
+func readBlockString(s *source.Source, start uint) (Token, error) {
 	body := s.Body
 	position := start + 3
 	runePosition := start + 3
@@ -347,7 +342,7 @@ func readBlockString(s *source.Source, start int) (Token, error) {
 
 	for {
 		// Stop if we've reached the end of the buffer
-		if position >= len(body) {
+		if position >= uint(len(body)) {
 			break
 		}
 
@@ -494,7 +489,7 @@ func char2hex(a rune) int {
 	return -1
 }
 
-func makeToken(kind int, start int, end int, value string) Token {
+func makeToken(kind int, start uint, end uint, value string) Token {
 	return Token{Kind: kind, Start: start, End: end, Value: value}
 }
 
@@ -511,9 +506,9 @@ func printCharCode(code rune) string {
 	return fmt.Sprintf(`"\\u%04X"`, code)
 }
 
-func readToken(s *source.Source, fromPosition int) (Token, error) {
+func readToken(s *source.Source, fromPosition uint) (Token, error) {
 	body := s.Body
-	bodyLength := len(body)
+	bodyLength := uint(len(body))
 	position, runePosition := positionAfterWhitespace(body, fromPosition)
 	if position >= bodyLength {
 		return makeToken(TokenKind[EOF], position, position, ""), nil
@@ -543,6 +538,8 @@ func readToken(s *source.Source, fromPosition int) (Token, error) {
 	// )
 	case ')':
 		return makeToken(TokenKind[PAREN_R], position, position+1, ""), nil
+	case '*':
+		return makeToken(TokenKind[STAR], position, position+1, ""), nil
 	// .
 	case '.':
 		next1, _ := runeAt(body, position+1)
@@ -550,7 +547,6 @@ func readToken(s *source.Source, fromPosition int) (Token, error) {
 		if next1 == '.' && next2 == '.' {
 			return makeToken(TokenKind[SPREAD], position, position+3, ""), nil
 		}
-		break
 	// :
 	case ':':
 		return makeToken(TokenKind[COLON], position, position+1, ""), nil
@@ -610,8 +606,8 @@ func readToken(s *source.Source, fromPosition int) (Token, error) {
 }
 
 // Gets the rune from the byte array at given byte position and it's width in bytes
-func runeAt(body []byte, position int) (code rune, charWidth int) {
-	if len(body) <= position {
+func runeAt(body []byte, position uint) (code rune, charWidth uint) {
+	if uint(len(body)) <= position {
 		// <EOF>
 		return -1, utf8.RuneError
 	}
@@ -622,15 +618,15 @@ func runeAt(body []byte, position int) (code rune, charWidth int) {
 	}
 
 	r, n := utf8.DecodeRune(body[position:])
-	return r, n
+	return r, uint(n)
 }
 
 // Reads from body starting at startPosition until it finds a non-whitespace
 // or commented character, then returns the position of that character for lexing.
 // lexing.
 // Returns both byte positions and rune position
-func positionAfterWhitespace(body []byte, startPosition int) (position int, runePosition int) {
-	bodyLength := len(body)
+func positionAfterWhitespace(body []byte, startPosition uint) (position uint, runePosition uint) {
+	bodyLength := uint(len(body))
 	position = startPosition
 	runePosition = startPosition
 	for {
