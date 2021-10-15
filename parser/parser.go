@@ -815,13 +815,16 @@ func parseOperationDefinition(parser *Parser) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = expect(parser, lexer.TokenKind[lexer.COLON])
+	_, colon, err := optional(parser, lexer.TokenKind[lexer.COLON])
 	if err != nil {
 		return nil, err
 	}
-	ttype, err := parseType(parser)
-	if err != nil {
-		return nil, err
+	var ttype ast.Type = ast.NewNamed(nil, ast.NewName(nil, "void"))
+	if colon {
+		ttype, err = parseType(parser)
+		if err != nil {
+			return nil, err
+		}
 	}
 	annotations, err := parseAnnotations(parser)
 	if err != nil {
@@ -1381,6 +1384,14 @@ func expect(parser *Parser, kind int) (lexer.Token, error) {
 	}
 	descp := fmt.Sprintf("Expected %s, found %s", lexer.GetTokenKindDesc(kind), lexer.GetTokenDesc(token))
 	return token, errors.NewSyntaxError(parser.Source, token.Start, descp)
+}
+
+func optional(parser *Parser, kind int) (lexer.Token, bool, error) {
+	token := parser.Token
+	if token.Kind == kind {
+		return token, true, advance(parser)
+	}
+	return token, false, nil
 }
 
 // If the next token is a keyword with the given value, return that token after
