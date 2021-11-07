@@ -271,14 +271,18 @@ type EnumValueDefinition struct {
 	BaseNode
 	Name        *Name        `json:"name"`
 	Description *StringValue `json:"description,omitempty"` // Optional
+	Index       *IntValue    `json:"index"`
+	Display     *StringValue `json:"display,omitempty"` // Optional
 	AnnotatedNode
 }
 
-func NewEnumValueDefinition(loc *Location, name *Name, description *StringValue, annotations []*Annotation) *EnumValueDefinition {
+func NewEnumValueDefinition(loc *Location, name *Name, description *StringValue, index *IntValue, display *StringValue, annotations []*Annotation) *EnumValueDefinition {
 	return &EnumValueDefinition{
 		BaseNode:      BaseNode{kinds.EnumValueDefinition, loc},
 		Name:          name,
 		Description:   description,
+		Index:         index,
+		Display:       display,
 		AnnotatedNode: AnnotatedNode{annotations},
 	}
 }

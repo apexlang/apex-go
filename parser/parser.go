@@ -1178,14 +1178,34 @@ func parseEnumValueDefinition(parser *Parser) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	_, err = expect(parser, lexer.TokenKind[lexer.EQUALS])
+	if err != nil {
+		return nil, err
+	}
+	token, err := expect(parser, lexer.TokenKind[lexer.INT])
+	if err != nil {
+		return nil, err
+	}
+	indexValue, err := strconv.Atoi(token.Value)
+	index := ast.NewIntValue(loc(parser, token.Start), indexValue)
 	annotations, err := parseAnnotations(parser)
 	if err != nil {
 		return nil, err
+	}
+	var display *ast.StringValue
+	if _, ok, err := optionalKeyWord(parser, "as"); err != nil {
+		return nil, err
+	} else if ok {
+		if display, err = parseStringLiteral(parser); err != nil {
+			return nil, err
+		}
 	}
 	return ast.NewEnumValueDefinition(
 		loc(parser, start),
 		name,
 		description,
+		index,
+		display,
 		annotations,
 	), nil
 }
