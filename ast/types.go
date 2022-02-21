@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/wapc/widl-go/kinds"
+	"github.com/apexlang/apex-go/kinds"
 )
 
 type Type interface {

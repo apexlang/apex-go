@@ -1,13 +1,38 @@
-# WebAssembly Interface Definition Language (WIDL) for Golang
+# Apex Language support for Golang
 
-WIDL is a schema format for describing [waPC](https://github.com/wapc) modules and used by the [CLI](https://github.com/wapc/cli) to generate code for the supported guest languages. It heavily resembles [GraphQL schema](https://graphql.org/learn/schema/) but with some variations to fit better in the WebAssembly ecosystem.
+TODO
 
-* Built-in WebAssembly numeric types (i8-64, i8-64, f32, f64) - no scalars required
-* Scalars explicitly alias a known type
-* Functions can return `void` instead of returning `Boolean` as a workaround
-* Fields are required by default instead of optional and `?` is used after the field name to denote that it is optional
-* Support for maps
-* Operations are defined in a single interface instead of separating query and mutation operations
-* Removed the concepts that do not apply from GraphQL schema (e.g. Queries vs. Mutations, Field arguments, Variables, Fragments)
+```golang
+package main
 
-Everything in this package was borrowed and retrofitted from the awesome [Golang GraphQL library](https://github.com/graphql-go/graphql).  We thank the 70+ contributors to this project! It has enabled us to provide a succinct interface definition language to our users with minimal effort.
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+
+	"github.com/apexlang/apex-go/parser"
+)
+
+func main() {
+	schema, err := os.ReadFile("schema.apex")
+	if err != nil {
+		panic(err)
+	}
+	doc, err := parser.Parse(parser.ParseParams{
+		Source: string(schema),
+		Options: parser.ParseOptions{
+			NoLocation: true,
+			NoSource:   true,
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	jsonBytes, err := json.MarshalIndent(doc, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(jsonBytes))
+}
+```

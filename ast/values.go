@@ -1,6 +1,6 @@
 package ast
 
-import "github.com/wapc/widl-go/kinds"
+import "github.com/apexlang/apex-go/kinds"
 
 type Value interface {
 	Node

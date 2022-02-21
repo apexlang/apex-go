@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wapc/widl-go/ast"
-	"github.com/wapc/widl-go/location"
-	"github.com/wapc/widl-go/source"
+	"github.com/apexlang/apex-go/ast"
+	"github.com/apexlang/apex-go/location"
+	"github.com/apexlang/apex-go/source"
 )
 
 type Error struct {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/wapc/widl-go/ast"
-	"github.com/wapc/widl-go/errors"
-	"github.com/wapc/widl-go/lexer"
-	"github.com/wapc/widl-go/source"
+	"github.com/apexlang/apex-go/ast"
+	"github.com/apexlang/apex-go/errors"
+	"github.com/apexlang/apex-go/lexer"
+	"github.com/apexlang/apex-go/source"
 )
 
 type parseFn func(parser *Parser) (interface{}, error)

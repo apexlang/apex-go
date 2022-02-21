@@ -7,8 +7,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/wapc/widl-go/errors"
-	"github.com/wapc/widl-go/source"
+	"github.com/apexlang/apex-go/errors"
+	"github.com/apexlang/apex-go/source"
 )
 
 const (

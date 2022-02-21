@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/wapc/widl-go/source"
+	"github.com/apexlang/apex-go/source"
 )
 
 type Location struct {

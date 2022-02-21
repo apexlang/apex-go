@@ -3,7 +3,7 @@ package location
 import (
 	"regexp"
 
-	"github.com/wapc/widl-go/source"
+	"github.com/apexlang/apex-go/source"
 )
 
 type SourceLocation struct {
