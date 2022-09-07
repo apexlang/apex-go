@@ -1,6 +1,7 @@
 package parser
 
 import (
+	stderrs "errors"
 	"fmt"
 	"strconv"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/apexlang/apex-go/source"
 )
 
-type parseFn func(parser *Parser) (interface{}, error)
+type parseFn func(parser *Parser) (ast.Node, error)
 
 // parse operation, fragment, typeSystem{schema, type..., extension, directives} definition
 type parseDefinitionFn func(parser *Parser) (ast.Node, error)
@@ -29,8 +30,8 @@ func init() {
 		tokenDefinitionFn[lexer.IMPORT] = parseImportDefinition
 		tokenDefinitionFn[lexer.ALIAS] = parseAliasDefinition
 		tokenDefinitionFn[lexer.TYPE] = parseTypeDefinition
+		tokenDefinitionFn[lexer.FUNC] = parseFunctionDefinition
 		tokenDefinitionFn[lexer.INTERFACE] = parseInterfaceDefinition
-		tokenDefinitionFn[lexer.ROLE] = parseRoleDefinition
 		tokenDefinitionFn[lexer.UNION] = parseUnionDefinition
 		tokenDefinitionFn[lexer.ENUM] = parseEnumDefinition
 		tokenDefinitionFn[lexer.DIRECTIVE] = parseDirectiveDefinition
@@ -60,9 +61,12 @@ func Parse(p ParseParams) (*ast.Document, error) {
 	switch src := p.Source.(type) {
 	case *source.Source:
 		sourceObj = src
+	case []byte:
+		sourceObj = source.NewSource("", src)
+	case string:
+		sourceObj = source.NewSource("", []byte(src))
 	default:
-		body, _ := p.Source.(string)
-		sourceObj = source.NewSource("", []byte(body))
+		return nil, stderrs.New("unexpected value for Source")
 	}
 	parser, err := makeParser(sourceObj, p.Options)
 	if err != nil {
@@ -73,28 +77,6 @@ func Parse(p ParseParams) (*ast.Document, error) {
 		return nil, err
 	}
 	return doc, nil
-}
-
-// TODO: test and expose parseValue as a public
-func parseValue(p ParseParams) (ast.Value, error) {
-	var value ast.Value
-	var sourceObj *source.Source
-	switch src := p.Source.(type) {
-	case *source.Source:
-		sourceObj = src
-	default:
-		body, _ := p.Source.(string)
-		sourceObj = source.NewSource("", []byte(body))
-	}
-	parser, err := makeParser(sourceObj, p.Options)
-	if err != nil {
-		return value, err
-	}
-	value, err = parseValueLiteral(parser, false)
-	if err != nil {
-		return value, err
-	}
-	return value, nil
 }
 
 // Converts a name lex token into a name parse node.
@@ -188,7 +170,7 @@ func parseArguments(parser *Parser) ([]*ast.Argument, error) {
 /**
  * Argument : Name : Value
  */
-func parseArgument(parser *Parser) (interface{}, error) {
+func parseArgument(parser *Parser) (ast.Node, error) {
 	var (
 		err   error
 		name  *ast.Name
@@ -294,7 +276,7 @@ func parseValueLiteral(parser *Parser, isConst bool) (ast.Value, error) {
 	return nil, unexpected(parser, lexer.Token{})
 }
 
-func parseConstValue(parser *Parser) (interface{}, error) {
+func parseConstValue(parser *Parser) (ast.Node, error) {
 	value, err := parseValueLiteral(parser, true)
 	if err != nil {
 		return value, err
@@ -302,7 +284,7 @@ func parseConstValue(parser *Parser) (interface{}, error) {
 	return value, nil
 }
 
-func parseValueValue(parser *Parser) (interface{}, error) {
+func parseValueValue(parser *Parser) (ast.Node, error) {
 	return parseValueLiteral(parser, false)
 }
 
@@ -660,7 +642,7 @@ func parseImportDefinition(parser *Parser) (ast.Node, error) {
 	), nil
 }
 
-func parseImportName(parser *Parser) (interface{}, error) {
+func parseImportName(parser *Parser) (ast.Node, error) {
 	start := parser.Token.Start
 	name, err := parseName(parser)
 	if err != nil {
@@ -798,15 +780,32 @@ func parseImplementsInterfaces(parser *Parser) ([]*ast.Named, error) {
 	return types, nil
 }
 
-/**
- * OperationDefinition : Description? Name ArgumentsDefinition? : Type Annotations?
- */
-func parseOperationDefinition(parser *Parser) (interface{}, error) {
+func parseFunctionDefinition(parser *Parser) (ast.Node, error) {
 	start := parser.Token.Start
 	description, err := parseDescription(parser)
 	if err != nil {
 		return nil, err
 	}
+	_, err = expectKeyWord(parser, lexer.FUNC)
+	if err != nil {
+		return nil, err
+	}
+	return parseOperationDefinitionBody(parser, start, description)
+}
+
+/**
+ * OperationDefinition : Description? Name ArgumentsDefinition? : Type Annotations?
+ */
+func parseOperationDefinition(parser *Parser) (ast.Node, error) {
+	start := parser.Token.Start
+	description, err := parseDescription(parser)
+	if err != nil {
+		return nil, err
+	}
+	return parseOperationDefinitionBody(parser, start, description)
+}
+
+func parseOperationDefinitionBody(parser *Parser, start uint, description *ast.StringValue) (*ast.OperationDefinition, error) {
 	name, err := parseName(parser)
 	if err != nil {
 		return nil, err
@@ -844,7 +843,7 @@ func parseOperationDefinition(parser *Parser) (interface{}, error) {
 /**
  * FieldDefinition : Description? Name ArgumentsDefinition? : Type Annotations?
  */
-func parseFieldDefinition(parser *Parser) (interface{}, error) {
+func parseFieldDefinition(parser *Parser) (ast.Node, error) {
 	start := parser.Token.Start
 	description, err := parseDescription(parser)
 	if err != nil {
@@ -906,7 +905,7 @@ func parseParameterDefs(parser *Parser, unary bool) ([]*ast.ParameterDefinition,
 		}
 
 		return parameterDefinitions, false, nil
-	} else if unary && peek(parser, lexer.TokenKind[lexer.BRACE_L]) {
+	} else if unary && peek(parser, lexer.TokenKind[lexer.BRACKET_L]) {
 		// Unary operation
 		if err := advance(parser); err != nil {
 			return nil, true, err
@@ -916,7 +915,7 @@ func parseParameterDefs(parser *Parser, unary bool) ([]*ast.ParameterDefinition,
 			return nil, true, err
 		}
 
-		if _, err := expect(parser, lexer.TokenKind[lexer.BRACE_R]); err != nil {
+		if _, err := expect(parser, lexer.TokenKind[lexer.BRACKET_R]); err != nil {
 			return nil, true, err
 		}
 
@@ -929,7 +928,7 @@ func parseParameterDefs(parser *Parser, unary bool) ([]*ast.ParameterDefinition,
 /**
  * ParameterDefinition : Description? Name : Type DefaultValue? Annotations?
  */
-func parseParameterDef(parser *Parser) (interface{}, error) {
+func parseParameterDef(parser *Parser) (ast.Node, error) {
 	var (
 		description *ast.StringValue
 		name        *ast.Name
@@ -978,7 +977,7 @@ func parseParameterDef(parser *Parser) (interface{}, error) {
 /**
  * InterfaceDefinition :
  *   Description?
- *   interface Annotations? { FieldDefinition+ }
+ *   interface Name Annotations? { FieldDefinition+ }
  */
 func parseInterfaceDefinition(parser *Parser) (ast.Node, error) {
 	start := parser.Token.Start
@@ -987,46 +986,6 @@ func parseInterfaceDefinition(parser *Parser) (ast.Node, error) {
 		return nil, err
 	}
 	_, err = expectKeyWord(parser, lexer.INTERFACE)
-	if err != nil {
-		return nil, err
-	}
-	annotations, err := parseAnnotations(parser)
-	if err != nil {
-		return nil, err
-	}
-	iOperations, err := reverse(parser,
-		lexer.TokenKind[lexer.BRACE_L], parseOperationDefinition, lexer.TokenKind[lexer.BRACE_R],
-		false,
-	)
-	if err != nil {
-		return nil, err
-	}
-	operations := []*ast.OperationDefinition{}
-	for _, iOperation := range iOperations {
-		if iOperation != nil {
-			operations = append(operations, iOperation.(*ast.OperationDefinition))
-		}
-	}
-	return ast.NewInterfaceDefinition(
-		loc(parser, start),
-		description,
-		annotations,
-		operations,
-	), nil
-}
-
-/**
- * RoleDefinition :
- *   Description?
- *   role Name Annotations? { FieldDefinition+ }
- */
-func parseRoleDefinition(parser *Parser) (ast.Node, error) {
-	start := parser.Token.Start
-	description, err := parseDescription(parser)
-	if err != nil {
-		return nil, err
-	}
-	_, err = expectKeyWord(parser, lexer.ROLE)
 	if err != nil {
 		return nil, err
 	}
@@ -1168,7 +1127,7 @@ func parseEnumDefinition(parser *Parser) (ast.Node, error) {
  *
  * EnumValue : Name
  */
-func parseEnumValueDefinition(parser *Parser) (interface{}, error) {
+func parseEnumValueDefinition(parser *Parser) (ast.Node, error) {
 	start := parser.Token.Start
 	description, err := parseDescription(parser)
 	if err != nil {
@@ -1187,6 +1146,9 @@ func parseEnumValueDefinition(parser *Parser) (interface{}, error) {
 		return nil, err
 	}
 	indexValue, err := strconv.Atoi(token.Value)
+	if err != nil {
+		return nil, err
+	}
 	index := ast.NewIntValue(loc(parser, token.Start), indexValue)
 	annotations, err := parseAnnotations(parser)
 	if err != nil {
@@ -1444,15 +1406,7 @@ func unexpected(parser *Parser, atToken lexer.Token) error {
 	return errors.NewSyntaxError(parser.Source, token.Start, description)
 }
 
-func unexpectedEmpty(parser *Parser, beginLoc uint, openKind, closeKind int) error {
-	description := fmt.Sprintf("Unexpected empty IN %s%s",
-		lexer.GetTokenKindDesc(openKind),
-		lexer.GetTokenKindDesc(closeKind),
-	)
-	return errors.NewSyntaxError(parser.Source, beginLoc, description)
-}
-
-//  Returns list of parse nodes, determined by
+// Returns list of parse nodes, determined by
 // the parseFn. This list begins with a lex token of openKind
 // and ends with a lex token of closeKind. Advances the parser
 // to the next lex token after the closing token.

@@ -11,7 +11,7 @@ type Node interface {
 
 type BaseNode struct {
 	Kind kinds.Kind `json:"kind"`
-	Loc  *Location  `json:"loc,omitempty"`
+	Loc  *Location  `json:"-"`
 }
 
 func (node *BaseNode) GetKind() kinds.Kind {
