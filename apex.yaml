@@ -1,0 +1,12 @@
+spec: model.apexlang
+config:
+  package: model
+  module: github.com/apexlang/apex-wasm
+generates:
+  model/model.go:
+    module: '@apexlang/codegen/go'
+    visitorClass: InterfacesVisitor
+    config:
+      writeTypeInfo: false
+    runAfter:
+      - command: tinyjson -all model/model.go

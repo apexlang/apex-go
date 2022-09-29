@@ -14,16 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package source
+package rules
 
-type Source struct {
-	Body []byte `json:"body,omitempty"`
-	Name string `json:"name,omitempty"`
+import (
+	"github.com/apexlang/apex-go/ast"
+)
+
+func UniqueFunctionNames() ast.Visitor { return &uniqueFunctionNames{names: map[string]struct{}{}} }
+
+type uniqueFunctionNames struct {
+	ast.BaseVisitor
+	names map[string]struct{}
 }
 
-func NewSource(name string, body []byte) *Source {
-	return &Source{
-		Name: name,
-		Body: body,
+func (r *uniqueFunctionNames) VisitFunction(context ast.Context) {
+	function := context.Function
+	name := function.Name.Value
+	if _, duplicate := r.names[name]; duplicate {
+		context.ReportError(
+			ValidationError(function.Name, "duplicate function %q", name),
+		)
+		return
 	}
+
+	r.names[name] = struct{}{}
 }

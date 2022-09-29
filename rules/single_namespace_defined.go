@@ -14,16 +14,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package source
+package rules
 
-type Source struct {
-	Body []byte `json:"body,omitempty"`
-	Name string `json:"name,omitempty"`
+import (
+	"github.com/apexlang/apex-go/ast"
+)
+
+func SingleNamespaceDefined() ast.Visitor { return &singleNamespaceDefined{} }
+
+type singleNamespaceDefined struct {
+	ast.BaseVisitor
+	found bool
 }
 
-func NewSource(name string, body []byte) *Source {
-	return &Source{
-		Name: name,
-		Body: body,
+func (r *singleNamespaceDefined) VisitNamespace(context ast.Context) {
+	if !r.found {
+		r.found = true
+		return
 	}
+
+	context.ReportError(
+		ValidationError(context.Namespace, "only one namespace can be defined"),
+	)
 }

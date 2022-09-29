@@ -14,16 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package source
+package rules
 
-type Source struct {
-	Body []byte `json:"body,omitempty"`
-	Name string `json:"name,omitempty"`
-}
+import (
+	"github.com/iancoleman/strcase"
 
-func NewSource(name string, body []byte) *Source {
-	return &Source{
-		Name: name,
-		Body: body,
+	"github.com/apexlang/apex-go/ast"
+)
+
+func CamelCaseDirectiveNames() ast.Visitor { return &camelCaseDirectiveNames{} }
+
+type camelCaseDirectiveNames struct{ ast.BaseVisitor }
+
+func (c *camelCaseDirectiveNames) VisitDirective(context ast.Context) {
+	directive := context.Directive
+	name := directive.Name.Value
+	if name != strcase.ToLowerCamel(name) {
+		context.ReportError(
+			ValidationError(
+				directive.Name,
+				"directive %s should be camel case",
+				directive.Name.Value,
+			),
+		)
 	}
 }

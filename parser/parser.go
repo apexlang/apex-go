@@ -1,9 +1,26 @@
+/*
+Copyright 2022 The Apex Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package parser
 
 import (
 	stderrs "errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/apexlang/apex-go/ast"
 	"github.com/apexlang/apex-go/errors"
@@ -38,9 +55,12 @@ func init() {
 	}
 }
 
+type Resolver func(location string, from string) (string, error)
+
 type ParseOptions struct {
 	NoLocation bool
 	NoSource   bool
+	Resolver   Resolver
 }
 
 type ParseParams struct {
@@ -137,6 +157,109 @@ func parseDocument(parser *Parser) (*ast.Document, error) {
 		if node, err = item(parser); err != nil {
 			return nil, err
 		}
+
+		if imp, ok := node.(*ast.ImportDefinition); ok && parser.Options.Resolver != nil {
+			source, err := parser.Options.Resolver(imp.From.Value, "")
+			if err != nil {
+				return nil, err
+			}
+			if strings.HasPrefix(source, "error:") {
+				return nil, stderrs.New(source)
+			}
+			doc, err := Parse(ParseParams{
+				Source:  source,
+				Options: parser.Options,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			if imp.All {
+				nodes = append(nodes, doc.Definitions...)
+			} else {
+				allDefs := make(map[string]ast.Definition)
+				for _, def := range doc.Definitions {
+					switch v := def.(type) {
+					case *ast.TypeDefinition:
+						allDefs[v.Name.Value] = v
+					case *ast.EnumDefinition:
+						allDefs[v.Name.Value] = v
+					case *ast.UnionDefinition:
+						allDefs[v.Name.Value] = v
+					case *ast.DirectiveDefinition:
+						allDefs[v.Name.Value] = v
+					case *ast.AliasDefinition:
+						allDefs[v.Name.Value] = v
+					}
+				}
+
+				for _, n := range imp.Names {
+					def, ok := allDefs[n.Name.Value]
+					if !ok {
+						return nil, fmt.Errorf(
+							"could not find %q in %q", n.Name.Value, imp.From.Value)
+					}
+					name := n.Alias
+					if name == nil {
+						name = n.Name
+					}
+					switch v := def.(type) {
+					case *ast.TypeDefinition:
+						renamedType := ast.NewTypeDefinition(
+							name.Loc,
+							name,
+							v.Description,
+							v.Interfaces,
+							v.Annotations,
+							v.Fields,
+						)
+						nodes = append(nodes, renamedType)
+
+					case *ast.EnumDefinition:
+						renamedEnum := ast.NewEnumDefinition(
+							name.Loc,
+							name,
+							v.Description,
+							v.Annotations,
+							v.Values,
+						)
+						nodes = append(nodes, renamedEnum)
+
+					case *ast.UnionDefinition:
+						renamedUnion := ast.NewUnionDefinition(
+							name.Loc,
+							name,
+							v.Description,
+							v.Annotations,
+							v.Types,
+						)
+						nodes = append(nodes, renamedUnion)
+
+					case *ast.DirectiveDefinition:
+						renamedDirective := ast.NewDirectiveDefinition(
+							name.Loc,
+							name,
+							v.Description,
+							v.Parameters,
+							v.Locations,
+							v.Requires,
+						)
+						nodes = append(nodes, renamedDirective)
+
+					case *ast.AliasDefinition:
+						renamedAlias := ast.NewAliasDefinition(
+							name.Loc,
+							name,
+							v.Description,
+							v.Type,
+							v.Annotations,
+						)
+						nodes = append(nodes, renamedAlias)
+					}
+				}
+			}
+		}
+
 		nodes = append(nodes, node)
 	}
 	return ast.NewDocument(
@@ -820,9 +943,19 @@ func parseOperationDefinitionBody(parser *Parser, start uint, description *ast.S
 	}
 	var ttype ast.Type = ast.NewNamed(nil, ast.NewName(nil, "void"))
 	if colon {
+		streamToken, streamOK, err := optionalKeyWord(parser, "stream")
+		if err != nil {
+			return nil, err
+		}
+
 		ttype, err = parseType(parser)
 		if err != nil {
 			return nil, err
+		}
+
+		if streamOK {
+			streamLoc := loc(parser, streamToken.Start)
+			ttype = ast.NewStream(streamLoc, ttype)
 		}
 	}
 	annotations, err := parseAnnotations(parser)
@@ -946,9 +1079,21 @@ func parseParameterDef(parser *Parser) (ast.Node, error) {
 	if _, err = expect(parser, lexer.TokenKind[lexer.COLON]); err != nil {
 		return nil, err
 	}
+
+	streamToken, streamOK, err := optionalKeyWord(parser, "stream")
+	if err != nil {
+		return nil, err
+	}
+
 	if ttype, err = parseType(parser); err != nil {
 		return nil, err
 	}
+
+	if streamOK {
+		streamLoc := loc(parser, streamToken.Start)
+		ttype = ast.NewStream(streamLoc, ttype)
+	}
+
 	var defaultValue ast.Value
 	if skp, err := skip(parser, lexer.TokenKind[lexer.EQUALS]); err != nil {
 		return nil, err
@@ -1010,7 +1155,7 @@ func parseInterfaceDefinition(parser *Parser) (ast.Node, error) {
 			operations = append(operations, iOperation.(*ast.OperationDefinition))
 		}
 	}
-	return ast.NewRoleDefinition(
+	return ast.NewInterfaceDefinition(
 		loc(parser, start),
 		name,
 		description,

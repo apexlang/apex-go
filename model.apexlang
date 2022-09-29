@@ -1,0 +1,218 @@
+namespace "apexlang.v1"
+
+"Namespace encapsulates is used to identify and refer to elements contained in the Apex specification."
+type Namespace {
+  name:        string        @quoted
+  description: string?       @docs
+  annotations: [Annotation]? @prefix("@")
+
+  imports:     [Import]?    @keyword("import")
+  directives:  [Directive]? @keyword("directive")
+  aliases:     [Alias]?     @keyword("alias")
+  functions:   [Operation]? @keyword("func")
+  interfaces:  [Interface]? @keyword("interface")
+  types:       [Type]?      @keyword("type")
+  unions:      [Union]?     @keyword("union")
+}
+
+"Apex can integrate external definitions using the import keyword."
+type Import {
+  description: string?  @docs
+  all: bool
+  names: [ImportRef]? @body(open: "{", close: "}", or: "*")
+                      @delimiters([",", "\n"])
+                      @after("from")
+  from:  string       @quoted
+  annotations: [Annotation]? @prefix("@")
+}
+
+type ImportRef {
+  name: string
+  as:   string? @before("as")
+}
+
+"Types are the most basic component of an Apex specification. They represent data structures with fields. Types are defined in a language-agnostic way. This means that complex features like nested structures, inheritance, and generics/templates are omitted by design."
+type Type @body(open: "{", close: "}") {
+  name:        string
+  description: string?       @docs
+  fields:      [Field]
+  annotations: [Annotation]? @prefix("@")
+}
+
+"Interfaces are conceptual groups of operations that allow the developer to divide communication into multiple components. Typically, interfaces are named according to their purpose."
+type Interface @body(open: "{", close: "}") {
+  name:        string
+  description: string?       @docs
+  operations:  [Operation]
+  annotations: [Annotation]? @prefix("@")
+}
+
+"Alias types are used for cases when scalar types (like string) should be parsed our treated like a different data type in the generated code."
+type Alias {
+  name:        string  @after("=")
+  description: string? @docs
+  type:        TypeRef
+  annotations: [Annotation]? @prefix("@")
+}
+
+type Operation {
+  name:        string
+  description: string?       @docs
+  parameters:  [Parameter]?  @body(open: "(", close: ")")
+                             @delimiters([",", "\n"])
+  unary:       Parameter?    @body(open: "[", close: "]")
+  returns:     TypeRef?      @before(":")
+  annotations: [Annotation]? @before("@")
+}
+
+type Parameter {
+  name:         string        @after(":")
+  description:  string?       @docs
+  type:         TypeRef
+  defaultValue: Value?        @before("=")
+  annotations:  [Annotation]? @prefix("@")
+}
+
+type Field {
+  name:         string        @after(":")
+  description:  string?       @docs
+  type:         TypeRef
+  defaultValue: Value?        @before("=")
+  annotations:  [Annotation]? @prefix("@")
+}
+
+"Unions types denote that a type can have one of several representations."
+type Union {
+  name:        string        @after("=")
+  description: string?       @docs
+  types:       [TypeRef]     @delimiters(["|"])
+  annotations: [Annotation]? @prefix("@")
+}
+
+"Enumerations (or enums) are a type that is constrained to a finite set of allowed values."
+type Enum {
+  name:        string
+  description: string?       @docs
+  values:      [EnumValue]
+  annotations: [Annotation]? @prefix("@")
+}
+
+type EnumValue {
+  name:        string  @after("=")
+  description: string? @docs
+  index:       u64
+  display:     string? @before("as")
+  annotations: [Annotation]? @prefix("@")
+}
+
+"Directives are used to ensure that an annotation's arguments match an expected format."
+type Directive {
+  name:        string              @prefix("@")
+  description: string?             @docs
+  parameters:  [Parameter]?        @body(open: "(", close: ")")
+                                   @delimiters([",", "\n"])
+                                   @after("on")
+  locations:   [DirectiveLocation] @delimiters(["|"])
+  require:     [DirectiveRequire]  @keyword("require")
+}
+
+enum DirectiveLocation {
+  NAMESPACE  = 0
+  ALIAS      = 1
+  UNION      = 2
+  ENUM       = 3
+  ENUM_VALUE = 4
+  TYPE       = 5
+  FIELD      = 6
+  INTERFACE  = 7
+  OPERATION  = 8
+  PARAMETER  = 9
+}
+
+type DirectiveRequire {
+  directive: string              @prefix("@") @after("on")
+  locations: [DirectiveLocation] @delimiters(["|"])
+}
+
+"Annotations attach additional metadata to elements. These can be used in the code generation tool to implement custom functionality for your use case. Annotations have a name and zero or many arguments."
+type Annotation {
+  name:      string
+  arguments: [Argument]? @body(open: "(", close: ")")
+                         @delimiters([",", "\n"])
+}
+
+type Argument {
+  name:  string @after(":")
+  value: Value
+}
+
+union TypeRef = Scalar | Named| List | Map | Stream | Optional
+
+enum Scalar {
+  STRING   = 1
+  BOOL     = 2
+  I8       = 3
+  I16      = 4
+  I32      = 5
+  I64      = 6
+  U8       = 7
+  U16      = 8
+  U32      = 9
+  U64      = 10
+  F32      = 11
+  F64      = 12
+  BYTES    = 13
+  DATETIME = 14
+  ANY      = 15
+  RAW      = 16
+}
+
+type Named {
+  kind: Kind
+  name: string
+}
+
+enum Kind {
+  TYPE = 1
+  FUNC = 2
+  INTERFACE = 3
+  ALIAS = 4
+  UNION = 5
+  ENUM = 6
+}
+
+type List {
+  type: TypeRef
+}
+
+type Map {
+  keyType:   TypeRef
+  valueType: TypeRef
+}
+
+type Stream {
+  type: TypeRef
+}
+
+type Optional {
+  type: TypeRef
+}
+
+union Value = bool | string | i64 | f64 | Reference | ListValue | ObjectValue
+
+type Reference {
+    name: string
+}
+
+type ListValue {
+    values: [Value]
+}
+
+type ObjectValue {
+    fields: [ObjectField]
+}
+
+type ObjectField {
+    name: string
+    value: Value
+}
