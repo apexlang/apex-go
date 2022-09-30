@@ -12,7 +12,6 @@ import (
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
-	// "github.com/apexlang/apex-go/parser"
 )
 
 //go:embed apex-api.wasm
@@ -98,7 +97,7 @@ func main() {
 		return returnString(m, source)
 	}
 
-	_, err = r.NewHostModuleBuilder("apex").
+	m, err := r.NewHostModuleBuilder("apex").
 		ExportFunction("resolve", resolve,
 			"resolve",
 			"location_ptr", "location_len",
@@ -107,20 +106,25 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer m.Close(ctx)
 
-	if _, err := wasi_snapshot_preview1.Instantiate(ctx, r); err != nil {
+	closer, err := wasi_snapshot_preview1.Instantiate(ctx, r)
+	if err != nil {
 		panic(err)
 	}
+	defer closer.Close(ctx)
 
 	code, err := r.CompileModule(ctx, apexWasm)
 	if err != nil {
 		panic(err)
 	}
+	defer code.Close(ctx)
 
 	g, err := r.InstantiateModule(ctx, code, config)
 	if err != nil {
 		panic(err)
 	}
+	defer g.Close(ctx)
 
 	parse := g.ExportedFunction("parse")
 	malloc = g.ExportedFunction("_malloc")
@@ -151,17 +155,6 @@ func main() {
 	ptr := uint32(ret >> uint64(32))
 
 	docBytes, _ := g.Memory().Read(ctx, ptr, size)
-
-	// doc, err := parser.Parse(parser.ParseParams{
-	// 	Source: specBytes,
-	// })
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// docBytes, err := json.MarshalIndent(doc, "", "  ")
-	// if err != nil {
-	// 	panic(err)
-	// }
 
 	fmt.Println(string(docBytes))
 }
