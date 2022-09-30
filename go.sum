@@ -1,0 +1,8 @@
+github.com/apexlang/tinyjson v0.9.1-0.20220929010544-92ef7a6da107 h1:GljFiJysL3S8SBhXWU47Emj34D3pVZgJ+Amj+jhM4fQ=
+github.com/apexlang/tinyjson v0.9.1-0.20220929010544-92ef7a6da107/go.mod h1:5+7QnSKrkIWnpIdhUT2t2EYzXnII3/3MlM0oDsBSbc8=
+github.com/iancoleman/strcase v0.2.0 h1:05I4QRnGpI0m37iZQRuskXh+w77mr6Z41lwQzuHLwW0=
+github.com/iancoleman/strcase v0.2.0/go.mod h1:iwCmte+B7n89clKwxIoIXy/HfoL7AsD47ZCWhYzw7ho=
+github.com/josharian/intern v1.0.0 h1:vlS4z54oSdjm0bgjRigI+G1HpF+tI+9rE5LLzOg8HmY=
+github.com/josharian/intern v1.0.0/go.mod h1:5DoeVV0s6jJacbCEi61lwdGj/aVlrQvzHFFd8Hwg//Y=
+github.com/tetratelabs/tinymem v0.1.0 h1:Qza1JAg9lquPPJ/CIei5qQYx7t18KLie83O2WR6CM58=
+github.com/tetratelabs/tinymem v0.1.0/go.mod h1:WFFTZFhLod6lTL+UetFAopVbGaB+KFsVcIY+RUv7NeY=

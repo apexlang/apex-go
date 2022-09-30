@@ -14,16 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package source
+package rules
 
-type Source struct {
-	Body []byte `json:"body,omitempty"`
-	Name string `json:"name,omitempty"`
+import (
+	"github.com/apexlang/apex-go/ast"
+)
+
+func UniqueDirectiveNames() ast.Visitor { return &uniqueDirectiveNames{names: map[string]struct{}{}} }
+
+type uniqueDirectiveNames struct {
+	ast.BaseVisitor
+	names map[string]struct{}
 }
 
-func NewSource(name string, body []byte) *Source {
-	return &Source{
-		Name: name,
-		Body: body,
+func (r *uniqueDirectiveNames) VisitDirective(context ast.Context) {
+	directive := context.Directive
+	name := directive.Name.Value
+	if _, duplicate := r.names[name]; duplicate {
+		context.ReportError(
+			ValidationError(directive.Name, "duplicate directive %q", name),
+		)
+		return
 	}
+
+	r.names[name] = struct{}{}
 }
