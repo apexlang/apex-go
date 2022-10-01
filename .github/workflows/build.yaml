@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: '1.19'
-  
+
       - uses: acifani/setup-tinygo@v1
         with:
           tinygo-version: 0.25.0
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: '1.19'
-      
+
       - name: Install wasm-opt
         run: |
           wget https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz
@@ -37,20 +37,27 @@ jobs:
           rm -rf binaryen-version_110-x86_64-linux.tar.gz
           cp binaryen-version_110/bin/wasm-opt /usr/local/bin
           rm -Rf binaryen-version_110
-      
+
       - name: Install tinyjson
         run: go install github.com/CosmWasm/tinyjson/...@latest
 
       - name: Install Apex CLI
-        run: wget -q https://apexlang.io/install.sh -O - | /bin/bash
+        run: |
+          wget -q https://apexlang.io/install.sh -O - | /bin/bash
+          apex install @wapc/codegen
 
       - name: Apex code generation
         run: apex generate
-      
+
       - name: Build WebAssembly parser
         run: |
           tinygo build -o apex-parser.wasm -scheduler=none -target=wasi -wasm-abi=generic -no-debug cmd/apex-api/main.go
           wasm-opt -O apex-parser.wasm -o apex-parser.wasm
+
+      - name: Build waPC module
+        run: |
+          tinygo build -o apex-wapc.wasm -scheduler=none -target=wasi -wasm-abi=generic -no-debug cmd/wapc/main.go
+          wasm-opt -O apex-wapc.wasm -o apex-wapc.wasm
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -58,4 +65,6 @@ jobs:
         with:
           files: |
             apex-parser.wasm
+            apex-wapc.wasm
+            model.apexlang
             LICENSE.txt

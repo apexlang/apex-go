@@ -1,5 +1,29 @@
 namespace "apexlang.v1"
 
+interface Parser @service @uses([Resolver]) {
+  parse(source: string): ParserResult
+}
+
+interface Resolver @dependency {
+  resolve(location: string, from: string): string
+}
+
+type ParserResult {
+  namespace: Namespace?
+  errors: [Error]?
+}
+
+type Error {
+	message:   string
+	positions: [u32]
+	locations: [Location]
+}
+
+type Location {
+  line:   u32
+	column: u32
+}
+
 "Namespace encapsulates is used to identify and refer to elements contained in the Apex specification."
 type Namespace {
   name:        string        @quoted
