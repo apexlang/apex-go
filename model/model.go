@@ -3,6 +3,7 @@
 package model
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -11,6 +12,33 @@ type ns struct{}
 
 func (n *ns) Namespace() string {
 	return "apexlang.v1"
+}
+
+type Parser interface {
+	Parse(ctx context.Context, source string) (*ParserResult, error)
+}
+
+type Resolver interface {
+	Resolve(ctx context.Context, location string, from string) (string, error)
+}
+
+type ParserResult struct {
+	ns
+	Namespace *Namespace `json:"namespace,omitempty" yaml:"namespace,omitempty" msgpack:"namespace,omitempty"`
+	Errors    []Error    `json:"errors,omitempty" yaml:"errors,omitempty" msgpack:"errors,omitempty"`
+}
+
+type Error struct {
+	ns
+	Message   string     `json:"message" yaml:"message" msgpack:"message"`
+	Positions []uint32   `json:"positions" yaml:"positions" msgpack:"positions"`
+	Locations []Location `json:"locations" yaml:"locations" msgpack:"locations"`
+}
+
+type Location struct {
+	ns
+	Line   uint32 `json:"line" yaml:"line" msgpack:"line"`
+	Column uint32 `json:"column" yaml:"column" msgpack:"column"`
 }
 
 // Namespace encapsulates is used to identify and refer to elements contained in

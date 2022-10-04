@@ -1,7 +1,7 @@
 spec: model.apexlang
 config:
   package: model
-  module: github.com/apexlang/apex-wasm
+  module: github.com/apexlang/apex-go
 generates:
   model/model.go:
     module: '@apexlang/codegen/go'
@@ -10,3 +10,15 @@ generates:
       writeTypeInfo: false
     runAfter:
       - command: tinyjson -all model/model.go
+  model/msgpack.go:
+    module: '@apexlang/codegen/go'
+    visitorClass: MsgPackVisitor
+  model/wapc.go:
+    module: '@wapc/codegen/tinygo'
+    visitorClass: ExportVisitor
+  cmd/wapc/main.go:
+    module: '@wapc/codegen/tinygo'
+    visitorClass: MainVisitor
+    config:
+      import: github.com/apexlang/apex-go/model
+      package: model
