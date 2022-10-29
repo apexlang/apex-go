@@ -180,6 +180,8 @@ func parseDocument(parser *Parser) (*ast.Document, error) {
 				allDefs := make(map[string]ast.Definition)
 				for _, def := range doc.Definitions {
 					switch v := def.(type) {
+					case *ast.InterfaceDefinition:
+						allDefs[v.Name.Value] = v
 					case *ast.TypeDefinition:
 						allDefs[v.Name.Value] = v
 					case *ast.EnumDefinition:
@@ -204,6 +206,16 @@ func parseDocument(parser *Parser) (*ast.Document, error) {
 						name = n.Name
 					}
 					switch v := def.(type) {
+					case *ast.InterfaceDefinition:
+						renamedType := ast.NewInterfaceDefinition(
+							name.Loc,
+							name,
+							v.Description,
+							v.Annotations,
+							v.Operations,
+						)
+						nodes = append(nodes, renamedType)
+
 					case *ast.TypeDefinition:
 						renamedType := ast.NewTypeDefinition(
 							name.Loc,
