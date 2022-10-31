@@ -38,17 +38,6 @@ jobs:
           cp binaryen-version_110/bin/wasm-opt /usr/local/bin
           rm -Rf binaryen-version_110
 
-      - name: Install tinyjson
-        run: go install github.com/CosmWasm/tinyjson/...@latest
-
-      - name: Install Apex CLI
-        run: |
-          wget -q https://apexlang.io/install.sh -O - | /bin/bash
-          apex install @wapc/codegen
-
-      - name: Apex code generation
-        run: apex generate
-
       - name: Build WebAssembly parser
         run: |
           tinygo build -o apex-parser.wasm -scheduler=none -target=wasi -wasm-abi=generic -no-debug cmd/apex-api/main.go

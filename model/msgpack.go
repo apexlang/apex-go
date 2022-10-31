@@ -9,11 +9,11 @@ import (
 
 var _ = convert.Package
 
-type parserParseArgs struct {
+type ParserParseArgs struct {
 	Source string `json:"source" yaml:"source" msgpack:"source"`
 }
 
-func (o *parserParseArgs) Decode(decoder msgpack.Reader) error {
+func (o *ParserParseArgs) Decode(decoder msgpack.Reader) error {
 	numFields, err := decoder.ReadMapSize()
 	if err != nil {
 		return err
@@ -39,7 +39,7 @@ func (o *parserParseArgs) Decode(decoder msgpack.Reader) error {
 	return nil
 }
 
-func (o *parserParseArgs) Encode(encoder msgpack.Writer) error {
+func (o *ParserParseArgs) Encode(encoder msgpack.Writer) error {
 	if o == nil {
 		encoder.WriteNil()
 		return nil
@@ -51,12 +51,12 @@ func (o *parserParseArgs) Encode(encoder msgpack.Writer) error {
 	return nil
 }
 
-type resolverResolveArgs struct {
+type ResolverResolveArgs struct {
 	Location string `json:"location" yaml:"location" msgpack:"location"`
 	From     string `json:"from" yaml:"from" msgpack:"from"`
 }
 
-func (o *resolverResolveArgs) Decode(decoder msgpack.Reader) error {
+func (o *ResolverResolveArgs) Decode(decoder msgpack.Reader) error {
 	numFields, err := decoder.ReadMapSize()
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func (o *resolverResolveArgs) Decode(decoder msgpack.Reader) error {
 	return nil
 }
 
-func (o *resolverResolveArgs) Encode(encoder msgpack.Writer) error {
+func (o *ResolverResolveArgs) Encode(encoder msgpack.Writer) error {
 	if o == nil {
 		encoder.WriteNil()
 		return nil
