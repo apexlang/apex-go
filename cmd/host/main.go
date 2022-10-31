@@ -41,67 +41,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	definitionsDir := filepath.Join(homeDir, "definitions")
+
+	definitions := definitions(filepath.Join(homeDir, "definitions"))
 
 	var malloc, free api.Function
 
-	returnString := func(m api.Module, value string) uint64 {
-		size := uint64(len(value))
-		results, err := malloc.Call(ctx, size)
-		if err != nil {
-			panic(err)
-		}
-
-		ptr := uintptr(results[0])
-
-		m.Memory().Write(ctx, uint32(ptr), []byte(value))
-		return (uint64(ptr) << uint64(32)) | uint64(size)
-	}
-
-	resolve := func(ctx context.Context, m api.Module, locationPtr, locationLen, fromPtr, fromLen uint32) uint64 {
-		locationBuf, ok := m.Memory().Read(ctx, locationPtr, locationLen)
-		if !ok {
-			return returnString(m, fmt.Sprintf("error: %v", err))
-		}
-		location := string(locationBuf)
-
-		loc := filepath.Join(definitionsDir, filepath.Join(strings.Split(location, "/")...))
-		if filepath.Ext(loc) != ".apex" {
-			specLoc := loc + ".apex"
-			found := false
-			stat, err := os.Stat(specLoc)
-			if err == nil && !stat.IsDir() {
-				found = true
-				loc = specLoc
-			}
-
-			if !found {
-				stat, err := os.Stat(loc)
-				if err != nil {
-					return returnString(m, fmt.Sprintf("error: %v", err))
-				}
-				if stat.IsDir() {
-					loc = filepath.Join(loc, "index.apex")
-				} else {
-					loc += ".apex"
-				}
-			}
-		}
-
-		data, err := os.ReadFile(loc)
-		if err != nil {
-			return returnString(m, fmt.Sprintf("error: %v", err))
-		}
-
-		source := string(data)
-		return returnString(m, source)
-	}
-
 	m, err := r.NewHostModuleBuilder("apex").
-		ExportFunction("resolve", resolve,
-			"resolve",
-			"location_ptr", "location_len",
-			"from_ptr", "from_len").
+		NewFunctionBuilder().
+		WithFunc(definitions.resolve).
+		WithParameterNames("location_ptr", "location_len", "from_ptr", "from_len").
+		Export("resolve").
 		Instantiate(ctx, r)
 	if err != nil {
 		panic(err)
@@ -157,6 +106,62 @@ func main() {
 	docBytes, _ := g.Memory().Read(ctx, ptr, size)
 
 	fmt.Println(string(docBytes))
+}
+
+type definitions string
+
+// resolve is defined as a reflective func because it isn't used frequently.
+func (d definitions) resolve(ctx context.Context, m api.Module, locationPtr, locationLen, fromPtr, fromLen uint32) uint64 {
+	locationBuf, ok := m.Memory().Read(ctx, locationPtr, locationLen)
+	if !ok {
+		returnString(ctx, m, "out of memory")
+	}
+	location := string(locationBuf)
+
+	loc := filepath.Join(string(d), filepath.Join(strings.Split(location, "/")...))
+	if filepath.Ext(loc) != ".apex" {
+		specLoc := loc + ".apex"
+		found := false
+		stat, err := os.Stat(specLoc)
+		if err == nil && !stat.IsDir() {
+			found = true
+			loc = specLoc
+		}
+
+		if !found {
+			stat, err := os.Stat(loc)
+			if err != nil {
+				return returnString(ctx, m, fmt.Sprintf("error: %v", err))
+			}
+			if stat.IsDir() {
+				loc = filepath.Join(loc, "index.apex")
+			} else {
+				loc += ".apex"
+			}
+		}
+	}
+
+	data, err := os.ReadFile(loc)
+	if err != nil {
+		returnString(ctx, m, fmt.Sprintf("error: %v", err))
+	}
+
+	source := string(data)
+	return returnString(ctx, m, source)
+}
+
+func returnString(ctx context.Context, m api.Module, value string) uint64 {
+	size := uint64(len(value))
+	results, err := m.ExportedFunction("_malloc").Call(ctx, size)
+	if err != nil {
+		panic(err)
+	}
+
+	ptr := uintptr(results[0])
+
+	m.Memory().Write(ctx, uint32(ptr), []byte(value))
+	ptrSize := (uint64(ptr) << uint64(32)) | uint64(size)
+	return ptrSize
 }
 
 func getHomeDirectory() (string, error) {
