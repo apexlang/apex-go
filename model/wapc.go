@@ -27,7 +27,7 @@ func NewResolver(binding ...string) *ResolverImpl {
 }
 
 func (h *ResolverImpl) Resolve(ctx context.Context, location string, from string) (string, error) {
-	inputArgs := ResolverResolveArgs{
+	inputArgs := resolverResolveArgs{
 		Location: location,
 		From:     from,
 	}
@@ -56,7 +56,7 @@ func parserParseWrapper(svc Parser) wapc.Function {
 	return func(payload []byte) ([]byte, error) {
 		ctx := context.Background()
 		decoder := msgpack.NewDecoder(payload)
-		var inputArgs ParserParseArgs
+		var inputArgs parserParseArgs
 		inputArgs.Decode(&decoder)
 		response, err := svc.Parse(ctx, inputArgs.Source)
 		if err != nil {
