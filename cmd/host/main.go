@@ -89,7 +89,7 @@ func main() {
 	bufferPtr := results[0]
 	defer free.Call(ctx, bufferPtr)
 
-	g.Memory().Write(ctx, uint32(bufferPtr), specBytes)
+	g.Memory().Write(uint32(bufferPtr), specBytes)
 	results, err = parse.Call(ctx, bufferPtr, specSize)
 	if err != nil {
 		panic(err)
@@ -103,7 +103,7 @@ func main() {
 	size := uint32(ret & 0xFFFFFFFF)
 	ptr := uint32(ret >> uint64(32))
 
-	docBytes, _ := g.Memory().Read(ctx, ptr, size)
+	docBytes, _ := g.Memory().Read(ptr, size)
 
 	fmt.Println(string(docBytes))
 }
@@ -112,7 +112,7 @@ type definitions string
 
 // resolve is defined as a reflective func because it isn't used frequently.
 func (d definitions) resolve(ctx context.Context, m api.Module, locationPtr, locationLen, fromPtr, fromLen uint32) uint64 {
-	locationBuf, ok := m.Memory().Read(ctx, locationPtr, locationLen)
+	locationBuf, ok := m.Memory().Read(locationPtr, locationLen)
 	if !ok {
 		returnString(ctx, m, "out of memory")
 	}
@@ -159,7 +159,7 @@ func returnString(ctx context.Context, m api.Module, value string) uint64 {
 
 	ptr := uintptr(results[0])
 
-	m.Memory().Write(ctx, uint32(ptr), []byte(value))
+	m.Memory().Write(uint32(ptr), []byte(value))
 	ptrSize := (uint64(ptr) << uint64(32)) | uint64(size)
 	return ptrSize
 }

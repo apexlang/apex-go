@@ -1,3 +1,4 @@
 *.wasm
 test.*
 /apex-host
+go.work.sum
