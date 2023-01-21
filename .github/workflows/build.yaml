@@ -55,5 +55,5 @@ jobs:
           files: |
             apex-parser.wasm
             apex-wapc.wasm
-            model.apexlang
+            model.axdl
             LICENSE.txt
