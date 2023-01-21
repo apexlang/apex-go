@@ -5,14 +5,8 @@ package model
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 )
-
-type ns struct{}
-
-func (n *ns) Namespace() string {
-	return "apexlang.v1"
-}
 
 type Parser interface {
 	Parse(ctx context.Context, source string) (*ParserResult, error)
@@ -23,20 +17,17 @@ type Resolver interface {
 }
 
 type ParserResult struct {
-	ns
 	Namespace *Namespace `json:"namespace,omitempty" yaml:"namespace,omitempty" msgpack:"namespace,omitempty"`
 	Errors    []Error    `json:"errors,omitempty" yaml:"errors,omitempty" msgpack:"errors,omitempty"`
 }
 
 type Error struct {
-	ns
 	Message   string     `json:"message" yaml:"message" msgpack:"message"`
 	Positions []uint32   `json:"positions" yaml:"positions" msgpack:"positions"`
 	Locations []Location `json:"locations" yaml:"locations" msgpack:"locations"`
 }
 
 type Location struct {
-	ns
 	Line   uint32 `json:"line" yaml:"line" msgpack:"line"`
 	Column uint32 `json:"column" yaml:"column" msgpack:"column"`
 }
@@ -44,7 +35,6 @@ type Location struct {
 // Namespace encapsulates is used to identify and refer to elements contained in
 // the Apex specification.
 type Namespace struct {
-	ns
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
@@ -59,7 +49,6 @@ type Namespace struct {
 
 // Apex can integrate external definitions using the import keyword.
 type Import struct {
-	ns
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	All         bool         `json:"all" yaml:"all" msgpack:"all"`
 	Names       []ImportRef  `json:"names,omitempty" yaml:"names,omitempty" msgpack:"names,omitempty"`
@@ -68,7 +57,6 @@ type Import struct {
 }
 
 type ImportRef struct {
-	ns
 	Name string  `json:"name" yaml:"name" msgpack:"name"`
 	As   *string `json:"as,omitempty" yaml:"as,omitempty" msgpack:"as,omitempty"`
 }
@@ -78,7 +66,6 @@ type ImportRef struct {
 // that complex features like nested structures, inheritance, and
 // generics/templates are omitted by design.
 type Type struct {
-	ns
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Fields      []Field      `json:"fields" yaml:"fields" msgpack:"fields"`
@@ -89,7 +76,6 @@ type Type struct {
 // divide communication into multiple components. Typically, interfaces are named
 // according to their purpose.
 type Interface struct {
-	ns
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Operations  []Operation  `json:"operations" yaml:"operations" msgpack:"operations"`
@@ -99,7 +85,6 @@ type Interface struct {
 // Alias types are used for cases when scalar types (like string) should be parsed
 // our treated like a different data type in the generated code.
 type Alias struct {
-	ns
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Type        TypeRef      `json:"type" yaml:"type" msgpack:"type"`
@@ -107,7 +92,6 @@ type Alias struct {
 }
 
 type Operation struct {
-	ns
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Parameters  []Parameter  `json:"parameters,omitempty" yaml:"parameters,omitempty" msgpack:"parameters,omitempty"`
@@ -117,7 +101,6 @@ type Operation struct {
 }
 
 type Parameter struct {
-	ns
 	Name         string       `json:"name" yaml:"name" msgpack:"name"`
 	Description  *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Type         TypeRef      `json:"type" yaml:"type" msgpack:"type"`
@@ -126,7 +109,6 @@ type Parameter struct {
 }
 
 type Field struct {
-	ns
 	Name         string       `json:"name" yaml:"name" msgpack:"name"`
 	Description  *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Type         TypeRef      `json:"type" yaml:"type" msgpack:"type"`
@@ -136,7 +118,6 @@ type Field struct {
 
 // Unions types denote that a type can have one of several representations.
 type Union struct {
-	ns
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Types       []TypeRef    `json:"types" yaml:"types" msgpack:"types"`
@@ -146,7 +127,6 @@ type Union struct {
 // Enumerations (or enums) are a type that is constrained to a finite set of
 // allowed values.
 type Enum struct {
-	ns
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Values      []EnumValue  `json:"values" yaml:"values" msgpack:"values"`
@@ -154,7 +134,6 @@ type Enum struct {
 }
 
 type EnumValue struct {
-	ns
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Index       uint64       `json:"index" yaml:"index" msgpack:"index"`
@@ -165,7 +144,6 @@ type EnumValue struct {
 // Directives are used to ensure that an annotation's arguments match an expected
 // format.
 type Directive struct {
-	ns
 	Name        string              `json:"name" yaml:"name" msgpack:"name"`
 	Description *string             `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Parameters  []Parameter         `json:"parameters,omitempty" yaml:"parameters,omitempty" msgpack:"parameters,omitempty"`
@@ -174,7 +152,6 @@ type Directive struct {
 }
 
 type DirectiveRequire struct {
-	ns
 	Directive string              `json:"directive" yaml:"directive" msgpack:"directive"`
 	Locations []DirectiveLocation `json:"locations" yaml:"locations" msgpack:"locations"`
 }
@@ -183,61 +160,50 @@ type DirectiveRequire struct {
 // code generation tool to implement custom functionality for your use case.
 // Annotations have a name and zero or many arguments.
 type Annotation struct {
-	ns
 	Name      string     `json:"name" yaml:"name" msgpack:"name"`
 	Arguments []Argument `json:"arguments,omitempty" yaml:"arguments,omitempty" msgpack:"arguments,omitempty"`
 }
 
 type Argument struct {
-	ns
 	Name  string `json:"name" yaml:"name" msgpack:"name"`
 	Value Value  `json:"value" yaml:"value" msgpack:"value"`
 }
 
 type Named struct {
-	ns
 	Kind Kind   `json:"kind" yaml:"kind" msgpack:"kind"`
 	Name string `json:"name" yaml:"name" msgpack:"name"`
 }
 
 type List struct {
-	ns
 	Type TypeRef `json:"type" yaml:"type" msgpack:"type"`
 }
 
 type Map struct {
-	ns
 	KeyType   TypeRef `json:"keyType" yaml:"keyType" msgpack:"keyType"`
 	ValueType TypeRef `json:"valueType" yaml:"valueType" msgpack:"valueType"`
 }
 
 type Stream struct {
-	ns
 	Type TypeRef `json:"type" yaml:"type" msgpack:"type"`
 }
 
 type Optional struct {
-	ns
 	Type TypeRef `json:"type" yaml:"type" msgpack:"type"`
 }
 
 type Reference struct {
-	ns
 	Name string `json:"name" yaml:"name" msgpack:"name"`
 }
 
 type ListValue struct {
-	ns
 	Values []Value `json:"values" yaml:"values" msgpack:"values"`
 }
 
 type ObjectValue struct {
-	ns
 	Fields []ObjectField `json:"fields" yaml:"fields" msgpack:"fields"`
 }
 
 type ObjectField struct {
-	ns
 	Name  string `json:"name" yaml:"name" msgpack:"name"`
 	Value Value  `json:"value" yaml:"value" msgpack:"value"`
 }
@@ -302,10 +268,6 @@ var toIDDirectiveLocation = map[string]DirectiveLocation{
 	"PARAMETER":  DirectiveLocationParameter,
 }
 
-func (e DirectiveLocation) Type() string {
-	return "DirectiveLocation"
-}
-
 func (e DirectiveLocation) String() string {
 	str, ok := toStringDirectiveLocation[e]
 	if !ok {
@@ -314,9 +276,13 @@ func (e DirectiveLocation) String() string {
 	return str
 }
 
-func (e *DirectiveLocation) FromString(str string) (ok bool) {
+func (e *DirectiveLocation) FromString(str string) error {
+	var ok bool
 	*e, ok = toIDDirectiveLocation[str]
-	return ok
+	if !ok {
+		return errors.New("unknown value \"" + str + "\" for DirectiveLocation")
+	}
+	return nil
 }
 
 // MarshalJSON marshals the enum as a quoted json string
@@ -331,10 +297,7 @@ func (e *DirectiveLocation) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	if !e.FromString(str) {
-		return fmt.Errorf("unknown value %q for DirectiveLocation", str)
-	}
-	return nil
+	return e.FromString(str)
 }
 
 type Scalar int32
@@ -396,10 +359,6 @@ var toIDScalar = map[string]Scalar{
 	"RAW":      ScalarRaw,
 }
 
-func (e Scalar) Type() string {
-	return "Scalar"
-}
-
 func (e Scalar) String() string {
 	str, ok := toStringScalar[e]
 	if !ok {
@@ -408,9 +367,13 @@ func (e Scalar) String() string {
 	return str
 }
 
-func (e *Scalar) FromString(str string) (ok bool) {
+func (e *Scalar) FromString(str string) error {
+	var ok bool
 	*e, ok = toIDScalar[str]
-	return ok
+	if !ok {
+		return errors.New("unknown value \"" + str + "\" for Scalar")
+	}
+	return nil
 }
 
 // MarshalJSON marshals the enum as a quoted json string
@@ -425,10 +388,7 @@ func (e *Scalar) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	if !e.FromString(str) {
-		return fmt.Errorf("unknown value %q for Scalar", str)
-	}
-	return nil
+	return e.FromString(str)
 }
 
 type Kind int32
@@ -460,10 +420,6 @@ var toIDKind = map[string]Kind{
 	"ENUM":      KindEnum,
 }
 
-func (e Kind) Type() string {
-	return "Kind"
-}
-
 func (e Kind) String() string {
 	str, ok := toStringKind[e]
 	if !ok {
@@ -472,9 +428,13 @@ func (e Kind) String() string {
 	return str
 }
 
-func (e *Kind) FromString(str string) (ok bool) {
+func (e *Kind) FromString(str string) error {
+	var ok bool
 	*e, ok = toIDKind[str]
-	return ok
+	if !ok {
+		return errors.New("unknown value \"" + str + "\" for Kind")
+	}
+	return nil
 }
 
 // MarshalJSON marshals the enum as a quoted json string
@@ -489,8 +449,5 @@ func (e *Kind) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	if !e.FromString(str) {
-		return fmt.Errorf("unknown value %q for Kind", str)
-	}
-	return nil
+	return e.FromString(str)
 }
