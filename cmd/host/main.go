@@ -51,7 +51,7 @@ func main() {
 		WithFunc(definitions.resolve).
 		WithParameterNames("location_ptr", "location_len", "from_ptr", "from_len").
 		Export("resolve").
-		Instantiate(ctx, r)
+		Instantiate(ctx)
 	if err != nil {
 		panic(err)
 	}
