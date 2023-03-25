@@ -36,12 +36,12 @@ jobs:
 
       - name: Build WebAssembly parser
         run: |
-          tinygo build -o apex-parser.wasm -scheduler=none -target=wasi -wasm-abi=generic -no-debug cmd/apex-api/main.go
+          tinygo build -o apex-parser.wasm -scheduler=none -target=wasi -no-debug cmd/apex-api/main.go
           wasm-opt -O apex-parser.wasm -o apex-parser.wasm
 
       - name: Build waPC module
         run: |
-          tinygo build -o apex-wapc.wasm -scheduler=none -target=wasi -wasm-abi=generic -no-debug cmd/wapc/main.go
+          tinygo build -o apex-wapc.wasm -scheduler=none -target=wasi -no-debug cmd/wapc/main.go
           wasm-opt -O apex-wapc.wasm -o apex-wapc.wasm
 
       - name: Release
