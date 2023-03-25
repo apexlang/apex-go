@@ -21,15 +21,31 @@ type ParserResult struct {
 	Errors    []Error    `json:"errors,omitempty" yaml:"errors,omitempty" msgpack:"errors,omitempty"`
 }
 
+// DefaultParserResult returns a `ParserResult` struct populated with its default
+// values.
+func DefaultParserResult() ParserResult {
+	return ParserResult{}
+}
+
 type Error struct {
 	Message   string     `json:"message" yaml:"message" msgpack:"message"`
 	Positions []uint32   `json:"positions" yaml:"positions" msgpack:"positions"`
 	Locations []Location `json:"locations" yaml:"locations" msgpack:"locations"`
 }
 
+// DefaultError returns a `Error` struct populated with its default values.
+func DefaultError() Error {
+	return Error{}
+}
+
 type Location struct {
 	Line   uint32 `json:"line" yaml:"line" msgpack:"line"`
 	Column uint32 `json:"column" yaml:"column" msgpack:"column"`
+}
+
+// DefaultLocation returns a `Location` struct populated with its default values.
+func DefaultLocation() Location {
+	return Location{}
 }
 
 // Namespace encapsulates is used to identify and refer to elements contained in
@@ -47,6 +63,11 @@ type Namespace struct {
 	Unions      []Union      `json:"unions,omitempty" yaml:"unions,omitempty" msgpack:"unions,omitempty"`
 }
 
+// DefaultNamespace returns a `Namespace` struct populated with its default values.
+func DefaultNamespace() Namespace {
+	return Namespace{}
+}
+
 // Apex can integrate external definitions using the import keyword.
 type Import struct {
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
@@ -56,9 +77,19 @@ type Import struct {
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
 }
 
+// DefaultImport returns a `Import` struct populated with its default values.
+func DefaultImport() Import {
+	return Import{}
+}
+
 type ImportRef struct {
 	Name string  `json:"name" yaml:"name" msgpack:"name"`
 	As   *string `json:"as,omitempty" yaml:"as,omitempty" msgpack:"as,omitempty"`
+}
+
+// DefaultImportRef returns a `ImportRef` struct populated with its default values.
+func DefaultImportRef() ImportRef {
+	return ImportRef{}
 }
 
 // Types are the most basic component of an Apex specification. They represent data
@@ -72,6 +103,11 @@ type Type struct {
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
 }
 
+// DefaultType returns a `Type` struct populated with its default values.
+func DefaultType() Type {
+	return Type{}
+}
+
 // Interfaces are conceptual groups of operations that allow the developer to
 // divide communication into multiple components. Typically, interfaces are named
 // according to their purpose.
@@ -80,6 +116,11 @@ type Interface struct {
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Operations  []Operation  `json:"operations" yaml:"operations" msgpack:"operations"`
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
+}
+
+// DefaultInterface returns a `Interface` struct populated with its default values.
+func DefaultInterface() Interface {
+	return Interface{}
 }
 
 // Alias types are used for cases when scalar types (like string) should be parsed
@@ -91,6 +132,11 @@ type Alias struct {
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
 }
 
+// DefaultAlias returns a `Alias` struct populated with its default values.
+func DefaultAlias() Alias {
+	return Alias{}
+}
+
 type Operation struct {
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
@@ -98,6 +144,11 @@ type Operation struct {
 	Unary       *Parameter   `json:"unary,omitempty" yaml:"unary,omitempty" msgpack:"unary,omitempty"`
 	Returns     *TypeRef     `json:"returns,omitempty" yaml:"returns,omitempty" msgpack:"returns,omitempty"`
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
+}
+
+// DefaultOperation returns a `Operation` struct populated with its default values.
+func DefaultOperation() Operation {
+	return Operation{}
 }
 
 type Parameter struct {
@@ -108,6 +159,11 @@ type Parameter struct {
 	Annotations  []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
 }
 
+// DefaultParameter returns a `Parameter` struct populated with its default values.
+func DefaultParameter() Parameter {
+	return Parameter{}
+}
+
 type Field struct {
 	Name         string       `json:"name" yaml:"name" msgpack:"name"`
 	Description  *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
@@ -116,12 +172,22 @@ type Field struct {
 	Annotations  []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
 }
 
+// DefaultField returns a `Field` struct populated with its default values.
+func DefaultField() Field {
+	return Field{}
+}
+
 // Unions types denote that a type can have one of several representations.
 type Union struct {
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Types       []TypeRef    `json:"types" yaml:"types" msgpack:"types"`
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
+}
+
+// DefaultUnion returns a `Union` struct populated with its default values.
+func DefaultUnion() Union {
+	return Union{}
 }
 
 // Enumerations (or enums) are a type that is constrained to a finite set of
@@ -133,12 +199,22 @@ type Enum struct {
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
 }
 
+// DefaultEnum returns a `Enum` struct populated with its default values.
+func DefaultEnum() Enum {
+	return Enum{}
+}
+
 type EnumValue struct {
 	Name        string       `json:"name" yaml:"name" msgpack:"name"`
 	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
 	Index       uint64       `json:"index" yaml:"index" msgpack:"index"`
 	Display     *string      `json:"display,omitempty" yaml:"display,omitempty" msgpack:"display,omitempty"`
 	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
+}
+
+// DefaultEnumValue returns a `EnumValue` struct populated with its default values.
+func DefaultEnumValue() EnumValue {
+	return EnumValue{}
 }
 
 // Directives are used to ensure that an annotation's arguments match an expected
@@ -151,9 +227,20 @@ type Directive struct {
 	Require     []DirectiveRequire  `json:"require" yaml:"require" msgpack:"require"`
 }
 
+// DefaultDirective returns a `Directive` struct populated with its default values.
+func DefaultDirective() Directive {
+	return Directive{}
+}
+
 type DirectiveRequire struct {
 	Directive string              `json:"directive" yaml:"directive" msgpack:"directive"`
 	Locations []DirectiveLocation `json:"locations" yaml:"locations" msgpack:"locations"`
+}
+
+// DefaultDirectiveRequire returns a `DirectiveRequire` struct populated with its
+// default values.
+func DefaultDirectiveRequire() DirectiveRequire {
+	return DirectiveRequire{}
 }
 
 // Annotations attach additional metadata to elements. These can be used in the
@@ -164,9 +251,20 @@ type Annotation struct {
 	Arguments []Argument `json:"arguments,omitempty" yaml:"arguments,omitempty" msgpack:"arguments,omitempty"`
 }
 
+// DefaultAnnotation returns a `Annotation` struct populated with its default
+// values.
+func DefaultAnnotation() Annotation {
+	return Annotation{}
+}
+
 type Argument struct {
 	Name  string `json:"name" yaml:"name" msgpack:"name"`
 	Value Value  `json:"value" yaml:"value" msgpack:"value"`
+}
+
+// DefaultArgument returns a `Argument` struct populated with its default values.
+func DefaultArgument() Argument {
+	return Argument{}
 }
 
 type Named struct {
@@ -174,8 +272,18 @@ type Named struct {
 	Name string `json:"name" yaml:"name" msgpack:"name"`
 }
 
+// DefaultNamed returns a `Named` struct populated with its default values.
+func DefaultNamed() Named {
+	return Named{}
+}
+
 type List struct {
 	Type TypeRef `json:"type" yaml:"type" msgpack:"type"`
+}
+
+// DefaultList returns a `List` struct populated with its default values.
+func DefaultList() List {
+	return List{}
 }
 
 type Map struct {
@@ -183,29 +291,66 @@ type Map struct {
 	ValueType TypeRef `json:"valueType" yaml:"valueType" msgpack:"valueType"`
 }
 
+// DefaultMap returns a `Map` struct populated with its default values.
+func DefaultMap() Map {
+	return Map{}
+}
+
 type Stream struct {
 	Type TypeRef `json:"type" yaml:"type" msgpack:"type"`
+}
+
+// DefaultStream returns a `Stream` struct populated with its default values.
+func DefaultStream() Stream {
+	return Stream{}
 }
 
 type Optional struct {
 	Type TypeRef `json:"type" yaml:"type" msgpack:"type"`
 }
 
+// DefaultOptional returns a `Optional` struct populated with its default values.
+func DefaultOptional() Optional {
+	return Optional{}
+}
+
 type Reference struct {
 	Name string `json:"name" yaml:"name" msgpack:"name"`
+}
+
+// DefaultReference returns a `Reference` struct populated with its default values.
+func DefaultReference() Reference {
+	return Reference{}
 }
 
 type ListValue struct {
 	Values []Value `json:"values" yaml:"values" msgpack:"values"`
 }
 
+// DefaultListValue returns a `ListValue` struct populated with its default values.
+func DefaultListValue() ListValue {
+	return ListValue{}
+}
+
 type ObjectValue struct {
 	Fields []ObjectField `json:"fields" yaml:"fields" msgpack:"fields"`
+}
+
+// DefaultObjectValue returns a `ObjectValue` struct populated with its default
+// values.
+func DefaultObjectValue() ObjectValue {
+	return ObjectValue{}
 }
 
 type ObjectField struct {
 	Name  string `json:"name" yaml:"name" msgpack:"name"`
 	Value Value  `json:"value" yaml:"value" msgpack:"value"`
+}
+
+// DefaultObjectField returns a `ObjectField` struct populated with its default
+// values.
+func DefaultObjectField() ObjectField {
+	return ObjectField{}
 }
 
 type TypeRef struct {
