@@ -109,7 +109,13 @@ type Field {
 type Union {
   name:        string        @after("=")
   description: string?       @docs
-  types:       [TypeRef]     @delimiters(["|"])
+  members:     [UnionMember] @delimiters(["|"])
+  annotations: [Annotation]? @prefix("@")
+}
+
+type UnionMember {
+  description: string?       @docs
+  type:        TypeRef
   annotations: [Annotation]? @prefix("@")
 }
 

@@ -1,5 +1,5 @@
 /*
-Copyright 2022 The Apex Authors.
+Copyright 2024 The Apex Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -164,6 +164,9 @@ type Visitor interface {
 
 	VisitUnionsBefore(context Context)
 	VisitUnion(context Context)
+	VisitUnionMembersBefore(context Context)
+	VisitUnionMember(context Context)
+	VisitUnionMembersAfter(context Context)
 	VisitUnionsAfter(context Context)
 
 	VisitAnnotationsBefore(context Context)
@@ -243,9 +246,12 @@ func (b *BaseVisitor) VisitEnumValuesAfter(context Context)  {}
 func (b *BaseVisitor) VisitEnumAfter(context Context)        {}
 func (b *BaseVisitor) VisitEnumsAfter(context Context)       {}
 
-func (b *BaseVisitor) VisitUnionsBefore(context Context) {}
-func (b *BaseVisitor) VisitUnion(context Context)        {}
-func (b *BaseVisitor) VisitUnionsAfter(context Context)  {}
+func (b *BaseVisitor) VisitUnionsBefore(context Context)       {}
+func (b *BaseVisitor) VisitUnion(context Context)              {}
+func (b *BaseVisitor) VisitUnionMembersBefore(context Context) {}
+func (b *BaseVisitor) VisitUnionMember(context Context)        {}
+func (b *BaseVisitor) VisitUnionMembersAfter(context Context)  {}
+func (b *BaseVisitor) VisitUnionsAfter(context Context)        {}
 
 func (b *BaseVisitor) VisitAnnotationsBefore(context Context)         {}
 func (b *BaseVisitor) VisitAnnotationBefore(context Context)          {}
@@ -450,6 +456,15 @@ func (m *MultiVisitor) VisitUnionsBefore(context Context) {
 }
 func (m *MultiVisitor) VisitUnion(context Context) {
 	m.visit(func(v Visitor) { v.VisitUnionsBefore(context) })
+}
+func (m *MultiVisitor) VisitUnionMembersBefore(context Context) {
+	m.visit(func(v Visitor) { v.VisitUnionMembersBefore(context) })
+}
+func (m *MultiVisitor) VisitUnionMember(context Context) {
+	m.visit(func(v Visitor) { v.VisitUnionMember(context) })
+}
+func (m *MultiVisitor) VisitUnionMembersAfter(context Context) {
+	m.visit(func(v Visitor) { v.VisitUnionMembersAfter(context) })
 }
 func (m *MultiVisitor) VisitUnionsAfter(context Context) {
 	m.visit(func(v Visitor) { v.VisitUnionsAfter(context) })

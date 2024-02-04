@@ -1,5 +1,5 @@
 /*
-Copyright 2022 The Apex Authors.
+Copyright 2024 The Apex Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -91,12 +91,12 @@ func (c *knownTypes) VisitField(context ast.Context) {
 
 func (c *knownTypes) VisitUnion(context ast.Context) {
 	union := context.Union
-	for _, ut := range union.Types {
+	for _, ut := range union.Members {
 		c.checkType(
 			context,
 			fmt.Sprintf(`union %q`, union.Name.Value),
 			union.Name.Value,
-			ut,
+			ut.Type,
 		)
 	}
 }

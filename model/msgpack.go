@@ -1093,20 +1093,20 @@ func (o *Union) Decode(decoder msgpack.Reader) error {
 			o.Name, err = decoder.ReadString()
 		case "description":
 			o.Description, err = decoder.ReadNillableString()
-		case "types":
+		case "members":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Types = make([]TypeRef, 0, listSize)
+			o.Members = make([]UnionMember, 0, listSize)
 			for listSize > 0 {
 				listSize--
-				var nonNilItem TypeRef
-				nonNilItem, err = msgpack.Decode[TypeRef](decoder)
+				var nonNilItem UnionMember
+				err = nonNilItem.Decode(decoder)
 				if err != nil {
 					return err
 				}
-				o.Types = append(o.Types, nonNilItem)
+				o.Members = append(o.Members, nonNilItem)
 			}
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
@@ -1144,11 +1144,73 @@ func (o *Union) Encode(encoder msgpack.Writer) error {
 	encoder.WriteString(o.Name)
 	encoder.WriteString("description")
 	encoder.WriteNillableString(o.Description)
-	encoder.WriteString("types")
-	encoder.WriteArraySize(uint32(len(o.Types)))
-	for _, v := range o.Types {
+	encoder.WriteString("members")
+	encoder.WriteArraySize(uint32(len(o.Members)))
+	for _, v := range o.Members {
 		v.Encode(encoder)
 	}
+	encoder.WriteString("annotations")
+	encoder.WriteArraySize(uint32(len(o.Annotations)))
+	for _, v := range o.Annotations {
+		v.Encode(encoder)
+	}
+
+	return nil
+}
+
+func (o *UnionMember) Decode(decoder msgpack.Reader) error {
+	numFields, err := decoder.ReadMapSize()
+	if err != nil {
+		return err
+	}
+
+	for numFields > 0 {
+		numFields--
+		field, err := decoder.ReadString()
+		if err != nil {
+			return err
+		}
+		switch field {
+		case "description":
+			o.Description, err = decoder.ReadNillableString()
+		case "type":
+			o.Type, err = msgpack.Decode[TypeRef](decoder)
+		case "annotations":
+			listSize, err := decoder.ReadArraySize()
+			if err != nil {
+				return err
+			}
+			o.Annotations = make([]Annotation, 0, listSize)
+			for listSize > 0 {
+				listSize--
+				var nonNilItem Annotation
+				err = nonNilItem.Decode(decoder)
+				if err != nil {
+					return err
+				}
+				o.Annotations = append(o.Annotations, nonNilItem)
+			}
+		default:
+			err = decoder.Skip()
+		}
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (o *UnionMember) Encode(encoder msgpack.Writer) error {
+	if o == nil {
+		encoder.WriteNil()
+		return nil
+	}
+	encoder.WriteMapSize(3)
+	encoder.WriteString("description")
+	encoder.WriteNillableString(o.Description)
+	encoder.WriteString("type")
+	o.Type.Encode(encoder)
 	encoder.WriteString("annotations")
 	encoder.WriteArraySize(uint32(len(o.Annotations)))
 	for _, v := range o.Annotations {
