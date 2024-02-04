@@ -1,5 +1,5 @@
 /*
-Copyright 2022 The Apex Authors.
+Copyright 2024 The Apex Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -225,20 +225,24 @@ func (c *Converter) convertUnions(items []*ast.UnionDefinition) []Union {
 		s[i] = Union{
 			Description: stringValuePtr(item.Description),
 			Name:        item.Name.Value,
-			Types:       c.convertTypeRefs(item.Types),
+			Members:     c.convertUnionMembers(item.Members),
 			Annotations: c.convertAnnotations(item.Annotations),
 		}
 	}
 	return s
 }
 
-func (c *Converter) convertTypeRefs(items []ast.Type) []TypeRef {
+func (c *Converter) convertUnionMembers(items []*ast.UnionMemberDefinition) []UnionMember {
 	if len(items) == 0 {
 		return nil
 	}
-	s := make([]TypeRef, len(items))
+	s := make([]UnionMember, len(items))
 	for i, item := range items {
-		s[i] = c.convertTypeRef(item)
+		s[i] = UnionMember{
+			Description: stringValuePtr(item.Description),
+			Type:        c.convertTypeRef(item.Type),
+			Annotations: c.convertAnnotations(item.Annotations),
+		}
 	}
 	return s
 }

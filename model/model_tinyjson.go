@@ -210,7 +210,131 @@ func (v *Value) UnmarshalJSON(data []byte) error {
 func (v *Value) UnmarshalTinyJSON(l *jlexer.Lexer) {
 	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(in *jlexer.Lexer, out *Union) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(in *jlexer.Lexer, out *UnionMember) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "description":
+			if in.IsNull() {
+				in.Skip()
+				out.Description = nil
+			} else {
+				if out.Description == nil {
+					out.Description = new(string)
+				}
+				*out.Description = string(in.String())
+			}
+		case "type":
+			(out.Type).UnmarshalTinyJSON(in)
+		case "annotations":
+			if in.IsNull() {
+				in.Skip()
+				out.Annotations = nil
+			} else {
+				in.Delim('[')
+				if out.Annotations == nil {
+					if !in.IsDelim(']') {
+						out.Annotations = make([]Annotation, 0, 1)
+					} else {
+						out.Annotations = []Annotation{}
+					}
+				} else {
+					out.Annotations = (out.Annotations)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v1 Annotation
+					(v1).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v1)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(out *jwriter.Writer, in UnionMember) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.Description != nil {
+		const prefix string = ",\"description\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.String(string(*in.Description))
+	}
+	{
+		const prefix string = ",\"type\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.Type).MarshalTinyJSON(out)
+	}
+	if len(in.Annotations) != 0 {
+		const prefix string = ",\"annotations\":"
+		out.RawString(prefix)
+		{
+			out.RawByte('[')
+			for v2, v3 := range in.Annotations {
+				if v2 > 0 {
+					out.RawByte(',')
+				}
+				(v3).MarshalTinyJSON(out)
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v UnionMember) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalTinyJSON supports tinyjson.Marshaler interface
+func (v UnionMember) MarshalTinyJSON(w *jwriter.Writer) {
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *UnionMember) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(&r, v)
+	return r.Error()
+}
+
+// UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
+func (v *UnionMember) UnmarshalTinyJSON(l *jlexer.Lexer) {
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(l, v)
+}
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel2(in *jlexer.Lexer, out *Union) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -241,25 +365,25 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(in *jlexer.Lexer, out *
 				}
 				*out.Description = string(in.String())
 			}
-		case "types":
+		case "members":
 			if in.IsNull() {
 				in.Skip()
-				out.Types = nil
+				out.Members = nil
 			} else {
 				in.Delim('[')
-				if out.Types == nil {
+				if out.Members == nil {
 					if !in.IsDelim(']') {
-						out.Types = make([]TypeRef, 0, 1)
+						out.Members = make([]UnionMember, 0, 0)
 					} else {
-						out.Types = []TypeRef{}
+						out.Members = []UnionMember{}
 					}
 				} else {
-					out.Types = (out.Types)[:0]
+					out.Members = (out.Members)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v1 TypeRef
-					(v1).UnmarshalTinyJSON(in)
-					out.Types = append(out.Types, v1)
+					var v4 UnionMember
+					(v4).UnmarshalTinyJSON(in)
+					out.Members = append(out.Members, v4)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -280,9 +404,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(in *jlexer.Lexer, out *
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v2 Annotation
-					(v2).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v2)
+					var v5 Annotation
+					(v5).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v5)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -297,7 +421,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(out *jwriter.Writer, in Union) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel2(out *jwriter.Writer, in Union) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -312,17 +436,17 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(out *jwriter.Writer, in
 		out.String(string(*in.Description))
 	}
 	{
-		const prefix string = ",\"types\":"
+		const prefix string = ",\"members\":"
 		out.RawString(prefix)
-		if in.Types == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.Members == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v3, v4 := range in.Types {
-				if v3 > 0 {
+			for v6, v7 := range in.Members {
+				if v6 > 0 {
 					out.RawByte(',')
 				}
-				(v4).MarshalTinyJSON(out)
+				(v7).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -332,11 +456,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(out *jwriter.Writer, in
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v5, v6 := range in.Annotations {
-				if v5 > 0 {
+			for v8, v9 := range in.Annotations {
+				if v8 > 0 {
 					out.RawByte(',')
 				}
-				(v6).MarshalTinyJSON(out)
+				(v9).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -347,27 +471,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v Union) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel2(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Union) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel1(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel2(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Union) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel2(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Union) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel1(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel2(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel2(in *jlexer.Lexer, out *TypeRef) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(in *jlexer.Lexer, out *TypeRef) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -458,7 +582,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel2(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel2(out *jwriter.Writer, in TypeRef) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(out *jwriter.Writer, in TypeRef) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -524,27 +648,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel2(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v TypeRef) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel2(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v TypeRef) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel2(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *TypeRef) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel2(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *TypeRef) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel2(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(in *jlexer.Lexer, out *Type) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel4(in *jlexer.Lexer, out *Type) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -591,9 +715,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(in *jlexer.Lexer, out *
 					out.Fields = (out.Fields)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v7 Field
-					(v7).UnmarshalTinyJSON(in)
-					out.Fields = append(out.Fields, v7)
+					var v10 Field
+					(v10).UnmarshalTinyJSON(in)
+					out.Fields = append(out.Fields, v10)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -614,9 +738,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(in *jlexer.Lexer, out *
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v8 Annotation
-					(v8).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v8)
+					var v11 Annotation
+					(v11).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v11)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -631,7 +755,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(out *jwriter.Writer, in Type) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel4(out *jwriter.Writer, in Type) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -652,11 +776,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(out *jwriter.Writer, in
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v9, v10 := range in.Fields {
-				if v9 > 0 {
+			for v12, v13 := range in.Fields {
+				if v12 > 0 {
 					out.RawByte(',')
 				}
-				(v10).MarshalTinyJSON(out)
+				(v13).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -666,11 +790,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(out *jwriter.Writer, in
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v11, v12 := range in.Annotations {
-				if v11 > 0 {
+			for v14, v15 := range in.Annotations {
+				if v14 > 0 {
 					out.RawByte(',')
 				}
-				(v12).MarshalTinyJSON(out)
+				(v15).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -681,27 +805,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v Type) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel4(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Type) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel3(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel4(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Type) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel4(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Type) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel3(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel4(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel4(in *jlexer.Lexer, out *Stream) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel5(in *jlexer.Lexer, out *Stream) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -732,7 +856,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel4(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel4(out *jwriter.Writer, in Stream) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel5(out *jwriter.Writer, in Stream) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -747,27 +871,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel4(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v Stream) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel4(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel5(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Stream) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel4(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel5(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Stream) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel4(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel5(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Stream) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel4(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel5(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel5(in *jlexer.Lexer, out *Reference) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel6(in *jlexer.Lexer, out *Reference) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -798,7 +922,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel5(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel5(out *jwriter.Writer, in Reference) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel6(out *jwriter.Writer, in Reference) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -813,27 +937,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel5(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v Reference) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel5(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel6(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Reference) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel5(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel6(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Reference) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel5(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel6(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Reference) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel5(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel6(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel6(in *jlexer.Lexer, out *ParserResult) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel7(in *jlexer.Lexer, out *ParserResult) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -878,9 +1002,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel6(in *jlexer.Lexer, out *
 					out.Errors = (out.Errors)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v13 Error
-					(v13).UnmarshalTinyJSON(in)
-					out.Errors = append(out.Errors, v13)
+					var v16 Error
+					(v16).UnmarshalTinyJSON(in)
+					out.Errors = append(out.Errors, v16)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -895,7 +1019,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel6(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel6(out *jwriter.Writer, in ParserResult) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel7(out *jwriter.Writer, in ParserResult) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -915,11 +1039,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel6(out *jwriter.Writer, in
 		}
 		{
 			out.RawByte('[')
-			for v14, v15 := range in.Errors {
-				if v14 > 0 {
+			for v17, v18 := range in.Errors {
+				if v17 > 0 {
 					out.RawByte(',')
 				}
-				(v15).MarshalTinyJSON(out)
+				(v18).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -930,27 +1054,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel6(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v ParserResult) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel6(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel7(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v ParserResult) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel6(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel7(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ParserResult) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel6(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel7(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *ParserResult) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel6(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel7(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel7(in *jlexer.Lexer, out *Parameter) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel8(in *jlexer.Lexer, out *Parameter) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1009,9 +1133,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel7(in *jlexer.Lexer, out *
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v16 Annotation
-					(v16).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v16)
+					var v19 Annotation
+					(v19).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v19)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1026,7 +1150,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel7(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel7(out *jwriter.Writer, in Parameter) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel8(out *jwriter.Writer, in Parameter) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1055,11 +1179,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel7(out *jwriter.Writer, in
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v17, v18 := range in.Annotations {
-				if v17 > 0 {
+			for v20, v21 := range in.Annotations {
+				if v20 > 0 {
 					out.RawByte(',')
 				}
-				(v18).MarshalTinyJSON(out)
+				(v21).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1070,27 +1194,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel7(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v Parameter) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel7(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel8(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Parameter) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel7(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel8(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Parameter) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel7(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel8(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Parameter) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel7(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel8(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel8(in *jlexer.Lexer, out *Optional) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(in *jlexer.Lexer, out *Optional) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1121,7 +1245,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel8(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel8(out *jwriter.Writer, in Optional) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(out *jwriter.Writer, in Optional) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1136,27 +1260,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel8(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v Optional) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel8(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Optional) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel8(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Optional) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel8(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Optional) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel8(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(in *jlexer.Lexer, out *Operation) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel10(in *jlexer.Lexer, out *Operation) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1203,9 +1327,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(in *jlexer.Lexer, out *
 					out.Parameters = (out.Parameters)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v19 Parameter
-					(v19).UnmarshalTinyJSON(in)
-					out.Parameters = append(out.Parameters, v19)
+					var v22 Parameter
+					(v22).UnmarshalTinyJSON(in)
+					out.Parameters = append(out.Parameters, v22)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1246,9 +1370,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(in *jlexer.Lexer, out *
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v20 Annotation
-					(v20).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v20)
+					var v23 Annotation
+					(v23).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v23)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1263,7 +1387,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(out *jwriter.Writer, in Operation) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel10(out *jwriter.Writer, in Operation) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1282,11 +1406,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(out *jwriter.Writer, in
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v21, v22 := range in.Parameters {
-				if v21 > 0 {
+			for v24, v25 := range in.Parameters {
+				if v24 > 0 {
 					out.RawByte(',')
 				}
-				(v22).MarshalTinyJSON(out)
+				(v25).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1306,11 +1430,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(out *jwriter.Writer, in
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v23, v24 := range in.Annotations {
-				if v23 > 0 {
+			for v26, v27 := range in.Annotations {
+				if v26 > 0 {
 					out.RawByte(',')
 				}
-				(v24).MarshalTinyJSON(out)
+				(v27).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1321,27 +1445,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v Operation) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel10(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Operation) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel9(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel10(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Operation) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel10(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Operation) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel9(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel10(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel10(in *jlexer.Lexer, out *ObjectValue) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel11(in *jlexer.Lexer, out *ObjectValue) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1376,9 +1500,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel10(in *jlexer.Lexer, out 
 					out.Fields = (out.Fields)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v25 ObjectField
-					(v25).UnmarshalTinyJSON(in)
-					out.Fields = append(out.Fields, v25)
+					var v28 ObjectField
+					(v28).UnmarshalTinyJSON(in)
+					out.Fields = append(out.Fields, v28)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1393,7 +1517,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel10(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel10(out *jwriter.Writer, in ObjectValue) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel11(out *jwriter.Writer, in ObjectValue) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1404,11 +1528,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel10(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v26, v27 := range in.Fields {
-				if v26 > 0 {
+			for v29, v30 := range in.Fields {
+				if v29 > 0 {
 					out.RawByte(',')
 				}
-				(v27).MarshalTinyJSON(out)
+				(v30).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1419,27 +1543,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel10(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v ObjectValue) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel10(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel11(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v ObjectValue) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel10(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel11(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ObjectValue) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel10(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel11(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *ObjectValue) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel10(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel11(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel11(in *jlexer.Lexer, out *ObjectField) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out *ObjectField) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1472,7 +1596,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel11(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel11(out *jwriter.Writer, in ObjectField) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, in ObjectField) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1492,27 +1616,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel11(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v ObjectField) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel11(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v ObjectField) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel11(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ObjectField) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel11(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *ObjectField) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel11(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out *Namespace) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel13(in *jlexer.Lexer, out *Namespace) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1559,9 +1683,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v28 Annotation
-					(v28).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v28)
+					var v31 Annotation
+					(v31).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v31)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1582,9 +1706,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 					out.Imports = (out.Imports)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v29 Import
-					(v29).UnmarshalTinyJSON(in)
-					out.Imports = append(out.Imports, v29)
+					var v32 Import
+					(v32).UnmarshalTinyJSON(in)
+					out.Imports = append(out.Imports, v32)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1605,9 +1729,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 					out.Directives = (out.Directives)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v30 Directive
-					(v30).UnmarshalTinyJSON(in)
-					out.Directives = append(out.Directives, v30)
+					var v33 Directive
+					(v33).UnmarshalTinyJSON(in)
+					out.Directives = append(out.Directives, v33)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1628,9 +1752,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 					out.Aliases = (out.Aliases)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v31 Alias
-					(v31).UnmarshalTinyJSON(in)
-					out.Aliases = append(out.Aliases, v31)
+					var v34 Alias
+					(v34).UnmarshalTinyJSON(in)
+					out.Aliases = append(out.Aliases, v34)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1651,9 +1775,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 					out.Functions = (out.Functions)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v32 Operation
-					(v32).UnmarshalTinyJSON(in)
-					out.Functions = append(out.Functions, v32)
+					var v35 Operation
+					(v35).UnmarshalTinyJSON(in)
+					out.Functions = append(out.Functions, v35)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1674,9 +1798,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 					out.Interfaces = (out.Interfaces)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v33 Interface
-					(v33).UnmarshalTinyJSON(in)
-					out.Interfaces = append(out.Interfaces, v33)
+					var v36 Interface
+					(v36).UnmarshalTinyJSON(in)
+					out.Interfaces = append(out.Interfaces, v36)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1697,9 +1821,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 					out.Types = (out.Types)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v34 Type
-					(v34).UnmarshalTinyJSON(in)
-					out.Types = append(out.Types, v34)
+					var v37 Type
+					(v37).UnmarshalTinyJSON(in)
+					out.Types = append(out.Types, v37)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1720,9 +1844,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 					out.Unions = (out.Unions)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v35 Union
-					(v35).UnmarshalTinyJSON(in)
-					out.Unions = append(out.Unions, v35)
+					var v38 Union
+					(v38).UnmarshalTinyJSON(in)
+					out.Unions = append(out.Unions, v38)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1737,7 +1861,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, in Namespace) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel13(out *jwriter.Writer, in Namespace) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1756,11 +1880,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v36, v37 := range in.Annotations {
-				if v36 > 0 {
+			for v39, v40 := range in.Annotations {
+				if v39 > 0 {
 					out.RawByte(',')
 				}
-				(v37).MarshalTinyJSON(out)
+				(v40).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1770,11 +1894,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v38, v39 := range in.Imports {
-				if v38 > 0 {
+			for v41, v42 := range in.Imports {
+				if v41 > 0 {
 					out.RawByte(',')
 				}
-				(v39).MarshalTinyJSON(out)
+				(v42).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1784,11 +1908,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v40, v41 := range in.Directives {
-				if v40 > 0 {
+			for v43, v44 := range in.Directives {
+				if v43 > 0 {
 					out.RawByte(',')
 				}
-				(v41).MarshalTinyJSON(out)
+				(v44).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1798,11 +1922,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v42, v43 := range in.Aliases {
-				if v42 > 0 {
+			for v45, v46 := range in.Aliases {
+				if v45 > 0 {
 					out.RawByte(',')
 				}
-				(v43).MarshalTinyJSON(out)
+				(v46).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1812,11 +1936,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v44, v45 := range in.Functions {
-				if v44 > 0 {
+			for v47, v48 := range in.Functions {
+				if v47 > 0 {
 					out.RawByte(',')
 				}
-				(v45).MarshalTinyJSON(out)
+				(v48).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1826,11 +1950,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v46, v47 := range in.Interfaces {
-				if v46 > 0 {
+			for v49, v50 := range in.Interfaces {
+				if v49 > 0 {
 					out.RawByte(',')
 				}
-				(v47).MarshalTinyJSON(out)
+				(v50).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1840,11 +1964,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v48, v49 := range in.Types {
-				if v48 > 0 {
+			for v51, v52 := range in.Types {
+				if v51 > 0 {
 					out.RawByte(',')
 				}
-				(v49).MarshalTinyJSON(out)
+				(v52).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1854,11 +1978,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v50, v51 := range in.Unions {
-				if v50 > 0 {
+			for v53, v54 := range in.Unions {
+				if v53 > 0 {
 					out.RawByte(',')
 				}
-				(v51).MarshalTinyJSON(out)
+				(v54).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1869,27 +1993,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Namespace) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel13(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Namespace) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel12(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel13(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Namespace) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel13(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Namespace) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel12(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel13(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel13(in *jlexer.Lexer, out *Named) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel14(in *jlexer.Lexer, out *Named) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1924,7 +2048,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel13(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel13(out *jwriter.Writer, in Named) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel14(out *jwriter.Writer, in Named) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1944,27 +2068,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel13(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Named) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel13(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel14(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Named) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel13(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel14(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Named) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel13(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel14(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Named) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel13(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel14(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel14(in *jlexer.Lexer, out *Map) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel15(in *jlexer.Lexer, out *Map) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1997,7 +2121,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel14(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel14(out *jwriter.Writer, in Map) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel15(out *jwriter.Writer, in Map) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2017,27 +2141,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel14(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Map) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel14(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel15(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Map) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel14(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel15(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Map) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel14(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel15(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Map) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel14(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel15(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel15(in *jlexer.Lexer, out *Location) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel16(in *jlexer.Lexer, out *Location) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2070,7 +2194,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel15(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel15(out *jwriter.Writer, in Location) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel16(out *jwriter.Writer, in Location) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2090,27 +2214,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel15(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Location) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel15(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel16(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Location) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel15(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel16(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Location) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel15(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel16(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Location) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel15(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel16(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel16(in *jlexer.Lexer, out *ListValue) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel17(in *jlexer.Lexer, out *ListValue) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2145,9 +2269,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel16(in *jlexer.Lexer, out 
 					out.Values = (out.Values)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v52 Value
-					(v52).UnmarshalTinyJSON(in)
-					out.Values = append(out.Values, v52)
+					var v55 Value
+					(v55).UnmarshalTinyJSON(in)
+					out.Values = append(out.Values, v55)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2162,7 +2286,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel16(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel16(out *jwriter.Writer, in ListValue) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel17(out *jwriter.Writer, in ListValue) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2173,11 +2297,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel16(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v53, v54 := range in.Values {
-				if v53 > 0 {
+			for v56, v57 := range in.Values {
+				if v56 > 0 {
 					out.RawByte(',')
 				}
-				(v54).MarshalTinyJSON(out)
+				(v57).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2188,27 +2312,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel16(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v ListValue) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel16(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel17(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v ListValue) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel16(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel17(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ListValue) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel16(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel17(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *ListValue) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel16(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel17(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel17(in *jlexer.Lexer, out *List) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(in *jlexer.Lexer, out *List) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2239,7 +2363,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel17(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel17(out *jwriter.Writer, in List) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(out *jwriter.Writer, in List) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2254,27 +2378,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel17(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v List) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel17(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v List) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel17(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *List) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel17(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *List) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel17(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(in *jlexer.Lexer, out *Interface) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel19(in *jlexer.Lexer, out *Interface) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2321,9 +2445,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(in *jlexer.Lexer, out 
 					out.Operations = (out.Operations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v55 Operation
-					(v55).UnmarshalTinyJSON(in)
-					out.Operations = append(out.Operations, v55)
+					var v58 Operation
+					(v58).UnmarshalTinyJSON(in)
+					out.Operations = append(out.Operations, v58)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2344,9 +2468,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(in *jlexer.Lexer, out 
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v56 Annotation
-					(v56).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v56)
+					var v59 Annotation
+					(v59).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v59)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2361,7 +2485,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(out *jwriter.Writer, in Interface) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel19(out *jwriter.Writer, in Interface) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2382,11 +2506,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v57, v58 := range in.Operations {
-				if v57 > 0 {
+			for v60, v61 := range in.Operations {
+				if v60 > 0 {
 					out.RawByte(',')
 				}
-				(v58).MarshalTinyJSON(out)
+				(v61).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2396,11 +2520,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v59, v60 := range in.Annotations {
-				if v59 > 0 {
+			for v62, v63 := range in.Annotations {
+				if v62 > 0 {
 					out.RawByte(',')
 				}
-				(v60).MarshalTinyJSON(out)
+				(v63).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2411,27 +2535,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Interface) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel19(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Interface) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel18(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel19(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Interface) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel19(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Interface) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel18(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel19(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel19(in *jlexer.Lexer, out *ImportRef) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(in *jlexer.Lexer, out *ImportRef) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2472,7 +2596,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel19(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel19(out *jwriter.Writer, in ImportRef) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(out *jwriter.Writer, in ImportRef) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2492,27 +2616,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel19(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v ImportRef) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel19(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v ImportRef) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel19(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ImportRef) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel19(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *ImportRef) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel19(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(in *jlexer.Lexer, out *Import) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel21(in *jlexer.Lexer, out *Import) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2559,9 +2683,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(in *jlexer.Lexer, out 
 					out.Names = (out.Names)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v61 ImportRef
-					(v61).UnmarshalTinyJSON(in)
-					out.Names = append(out.Names, v61)
+					var v64 ImportRef
+					(v64).UnmarshalTinyJSON(in)
+					out.Names = append(out.Names, v64)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2584,9 +2708,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(in *jlexer.Lexer, out 
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v62 Annotation
-					(v62).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v62)
+					var v65 Annotation
+					(v65).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v65)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2601,7 +2725,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(out *jwriter.Writer, in Import) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel21(out *jwriter.Writer, in Import) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2626,11 +2750,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v63, v64 := range in.Names {
-				if v63 > 0 {
+			for v66, v67 := range in.Names {
+				if v66 > 0 {
 					out.RawByte(',')
 				}
-				(v64).MarshalTinyJSON(out)
+				(v67).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2645,11 +2769,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v65, v66 := range in.Annotations {
-				if v65 > 0 {
+			for v68, v69 := range in.Annotations {
+				if v68 > 0 {
 					out.RawByte(',')
 				}
-				(v66).MarshalTinyJSON(out)
+				(v69).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2660,27 +2784,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Import) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel21(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Import) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel20(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel21(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Import) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel21(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Import) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel20(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel21(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel21(in *jlexer.Lexer, out *Field) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(in *jlexer.Lexer, out *Field) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2739,9 +2863,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel21(in *jlexer.Lexer, out 
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v67 Annotation
-					(v67).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v67)
+					var v70 Annotation
+					(v70).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v70)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2756,7 +2880,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel21(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel21(out *jwriter.Writer, in Field) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(out *jwriter.Writer, in Field) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2785,11 +2909,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel21(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v68, v69 := range in.Annotations {
-				if v68 > 0 {
+			for v71, v72 := range in.Annotations {
+				if v71 > 0 {
 					out.RawByte(',')
 				}
-				(v69).MarshalTinyJSON(out)
+				(v72).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2800,27 +2924,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel21(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Field) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel21(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Field) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel21(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Field) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel21(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Field) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel21(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(in *jlexer.Lexer, out *Error) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel23(in *jlexer.Lexer, out *Error) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2857,9 +2981,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(in *jlexer.Lexer, out 
 					out.Positions = (out.Positions)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v70 uint32
-					v70 = uint32(in.Uint32())
-					out.Positions = append(out.Positions, v70)
+					var v73 uint32
+					v73 = uint32(in.Uint32())
+					out.Positions = append(out.Positions, v73)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2880,9 +3004,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(in *jlexer.Lexer, out 
 					out.Locations = (out.Locations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v71 Location
-					(v71).UnmarshalTinyJSON(in)
-					out.Locations = append(out.Locations, v71)
+					var v74 Location
+					(v74).UnmarshalTinyJSON(in)
+					out.Locations = append(out.Locations, v74)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2897,7 +3021,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(out *jwriter.Writer, in Error) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel23(out *jwriter.Writer, in Error) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2913,11 +3037,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v72, v73 := range in.Positions {
-				if v72 > 0 {
+			for v75, v76 := range in.Positions {
+				if v75 > 0 {
 					out.RawByte(',')
 				}
-				out.Uint32(uint32(v73))
+				out.Uint32(uint32(v76))
 			}
 			out.RawByte(']')
 		}
@@ -2929,11 +3053,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v74, v75 := range in.Locations {
-				if v74 > 0 {
+			for v77, v78 := range in.Locations {
+				if v77 > 0 {
 					out.RawByte(',')
 				}
-				(v75).MarshalTinyJSON(out)
+				(v78).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2944,27 +3068,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Error) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel23(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Error) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel22(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel23(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Error) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel23(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Error) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel22(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel23(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel23(in *jlexer.Lexer, out *EnumValue) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(in *jlexer.Lexer, out *EnumValue) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -3023,9 +3147,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel23(in *jlexer.Lexer, out 
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v76 Annotation
-					(v76).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v76)
+					var v79 Annotation
+					(v79).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v79)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3040,7 +3164,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel23(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel23(out *jwriter.Writer, in EnumValue) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(out *jwriter.Writer, in EnumValue) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3069,11 +3193,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel23(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v77, v78 := range in.Annotations {
-				if v77 > 0 {
+			for v80, v81 := range in.Annotations {
+				if v80 > 0 {
 					out.RawByte(',')
 				}
-				(v78).MarshalTinyJSON(out)
+				(v81).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -3084,27 +3208,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel23(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v EnumValue) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel23(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v EnumValue) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel23(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *EnumValue) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel23(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *EnumValue) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel23(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(in *jlexer.Lexer, out *Enum) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel25(in *jlexer.Lexer, out *Enum) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -3151,9 +3275,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(in *jlexer.Lexer, out 
 					out.Values = (out.Values)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v79 EnumValue
-					(v79).UnmarshalTinyJSON(in)
-					out.Values = append(out.Values, v79)
+					var v82 EnumValue
+					(v82).UnmarshalTinyJSON(in)
+					out.Values = append(out.Values, v82)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3174,9 +3298,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(in *jlexer.Lexer, out 
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v80 Annotation
-					(v80).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v80)
+					var v83 Annotation
+					(v83).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v83)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3191,7 +3315,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(out *jwriter.Writer, in Enum) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel25(out *jwriter.Writer, in Enum) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3212,11 +3336,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v81, v82 := range in.Values {
-				if v81 > 0 {
+			for v84, v85 := range in.Values {
+				if v84 > 0 {
 					out.RawByte(',')
 				}
-				(v82).MarshalTinyJSON(out)
+				(v85).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -3226,11 +3350,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v83, v84 := range in.Annotations {
-				if v83 > 0 {
+			for v86, v87 := range in.Annotations {
+				if v86 > 0 {
 					out.RawByte(',')
 				}
-				(v84).MarshalTinyJSON(out)
+				(v87).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -3241,27 +3365,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Enum) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel25(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Enum) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel24(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel25(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Enum) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel25(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Enum) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel24(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel25(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel25(in *jlexer.Lexer, out *DirectiveRequire) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(in *jlexer.Lexer, out *DirectiveRequire) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -3298,11 +3422,11 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel25(in *jlexer.Lexer, out 
 					out.Locations = (out.Locations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v85 DirectiveLocation
+					var v88 DirectiveLocation
 					if data := in.Raw(); in.Ok() {
-						in.AddError((v85).UnmarshalJSON(data))
+						in.AddError((v88).UnmarshalJSON(data))
 					}
-					out.Locations = append(out.Locations, v85)
+					out.Locations = append(out.Locations, v88)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3317,7 +3441,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel25(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel25(out *jwriter.Writer, in DirectiveRequire) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(out *jwriter.Writer, in DirectiveRequire) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3333,11 +3457,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel25(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v86, v87 := range in.Locations {
-				if v86 > 0 {
+			for v89, v90 := range in.Locations {
+				if v89 > 0 {
 					out.RawByte(',')
 				}
-				out.Raw((v87).MarshalJSON())
+				out.Raw((v90).MarshalJSON())
 			}
 			out.RawByte(']')
 		}
@@ -3348,27 +3472,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel25(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v DirectiveRequire) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel25(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v DirectiveRequire) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel25(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *DirectiveRequire) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel25(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *DirectiveRequire) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel25(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(in *jlexer.Lexer, out *Directive) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel27(in *jlexer.Lexer, out *Directive) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -3415,9 +3539,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(in *jlexer.Lexer, out 
 					out.Parameters = (out.Parameters)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v88 Parameter
-					(v88).UnmarshalTinyJSON(in)
-					out.Parameters = append(out.Parameters, v88)
+					var v91 Parameter
+					(v91).UnmarshalTinyJSON(in)
+					out.Parameters = append(out.Parameters, v91)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3438,11 +3562,11 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(in *jlexer.Lexer, out 
 					out.Locations = (out.Locations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v89 DirectiveLocation
+					var v92 DirectiveLocation
 					if data := in.Raw(); in.Ok() {
-						in.AddError((v89).UnmarshalJSON(data))
+						in.AddError((v92).UnmarshalJSON(data))
 					}
-					out.Locations = append(out.Locations, v89)
+					out.Locations = append(out.Locations, v92)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3463,9 +3587,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(in *jlexer.Lexer, out 
 					out.Require = (out.Require)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v90 DirectiveRequire
-					(v90).UnmarshalTinyJSON(in)
-					out.Require = append(out.Require, v90)
+					var v93 DirectiveRequire
+					(v93).UnmarshalTinyJSON(in)
+					out.Require = append(out.Require, v93)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3480,7 +3604,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(out *jwriter.Writer, in Directive) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel27(out *jwriter.Writer, in Directive) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3499,11 +3623,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v91, v92 := range in.Parameters {
-				if v91 > 0 {
+			for v94, v95 := range in.Parameters {
+				if v94 > 0 {
 					out.RawByte(',')
 				}
-				(v92).MarshalTinyJSON(out)
+				(v95).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -3515,11 +3639,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v93, v94 := range in.Locations {
-				if v93 > 0 {
+			for v96, v97 := range in.Locations {
+				if v96 > 0 {
 					out.RawByte(',')
 				}
-				out.Raw((v94).MarshalJSON())
+				out.Raw((v97).MarshalJSON())
 			}
 			out.RawByte(']')
 		}
@@ -3531,11 +3655,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(out *jwriter.Writer, i
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v95, v96 := range in.Require {
-				if v95 > 0 {
+			for v98, v99 := range in.Require {
+				if v98 > 0 {
 					out.RawByte(',')
 				}
-				(v96).MarshalTinyJSON(out)
+				(v99).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -3546,27 +3670,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Directive) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel27(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Directive) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel26(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel27(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Directive) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel27(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Directive) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel26(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel27(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel27(in *jlexer.Lexer, out *Argument) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel28(in *jlexer.Lexer, out *Argument) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -3599,7 +3723,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel27(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel27(out *jwriter.Writer, in Argument) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel28(out *jwriter.Writer, in Argument) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3619,27 +3743,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel27(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Argument) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel27(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel28(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Argument) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel27(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel28(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Argument) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel27(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel28(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Argument) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel27(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel28(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel28(in *jlexer.Lexer, out *Annotation) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel29(in *jlexer.Lexer, out *Annotation) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -3676,9 +3800,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel28(in *jlexer.Lexer, out 
 					out.Arguments = (out.Arguments)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v97 Argument
-					(v97).UnmarshalTinyJSON(in)
-					out.Arguments = append(out.Arguments, v97)
+					var v100 Argument
+					(v100).UnmarshalTinyJSON(in)
+					out.Arguments = append(out.Arguments, v100)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3693,7 +3817,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel28(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel28(out *jwriter.Writer, in Annotation) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel29(out *jwriter.Writer, in Annotation) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3707,11 +3831,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel28(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v98, v99 := range in.Arguments {
-				if v98 > 0 {
+			for v101, v102 := range in.Arguments {
+				if v101 > 0 {
 					out.RawByte(',')
 				}
-				(v99).MarshalTinyJSON(out)
+				(v102).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -3722,27 +3846,27 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel28(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Annotation) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel28(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel29(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Annotation) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel28(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel29(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Annotation) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel28(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel29(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Annotation) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel28(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel29(l, v)
 }
-func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel29(in *jlexer.Lexer, out *Alias) {
+func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel30(in *jlexer.Lexer, out *Alias) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -3791,9 +3915,9 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel29(in *jlexer.Lexer, out 
 					out.Annotations = (out.Annotations)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v100 Annotation
-					(v100).UnmarshalTinyJSON(in)
-					out.Annotations = append(out.Annotations, v100)
+					var v103 Annotation
+					(v103).UnmarshalTinyJSON(in)
+					out.Annotations = append(out.Annotations, v103)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -3808,7 +3932,7 @@ func tinyjson85aaecc5DecodeGithubComApexlangApexGoModel29(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel29(out *jwriter.Writer, in Alias) {
+func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel30(out *jwriter.Writer, in Alias) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3832,11 +3956,11 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel29(out *jwriter.Writer, i
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v101, v102 := range in.Annotations {
-				if v101 > 0 {
+			for v104, v105 := range in.Annotations {
+				if v104 > 0 {
 					out.RawByte(',')
 				}
-				(v102).MarshalTinyJSON(out)
+				(v105).MarshalTinyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -3847,23 +3971,23 @@ func tinyjson85aaecc5EncodeGithubComApexlangApexGoModel29(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Alias) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel29(&w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel30(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalTinyJSON supports tinyjson.Marshaler interface
 func (v Alias) MarshalTinyJSON(w *jwriter.Writer) {
-	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel29(w, v)
+	tinyjson85aaecc5EncodeGithubComApexlangApexGoModel30(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Alias) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel29(&r, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel30(&r, v)
 	return r.Error()
 }
 
 // UnmarshalTinyJSON supports tinyjson.Unmarshaler interface
 func (v *Alias) UnmarshalTinyJSON(l *jlexer.Lexer) {
-	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel29(l, v)
+	tinyjson85aaecc5DecodeGithubComApexlangApexGoModel30(l, v)
 }

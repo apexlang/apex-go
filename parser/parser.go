@@ -1,5 +1,5 @@
 /*
-Copyright 2022 The Apex Authors.
+Copyright 2024 The Apex Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -243,7 +243,7 @@ func parseDocument(parser *Parser) (*ast.Document, error) {
 							name,
 							v.Description,
 							v.Annotations,
-							v.Types,
+							v.Members,
 						)
 						nodes = append(nodes, renamedUnion)
 
@@ -1219,14 +1219,28 @@ func parseUnionDefinition(parser *Parser) (ast.Node, error) {
  *   - NamedType
  *   - UnionMembers | NamedType
  */
-func parseUnionMembers(parser *Parser) ([]ast.Type, error) {
-	members := []ast.Type{}
+func parseUnionMembers(parser *Parser) ([]*ast.UnionMemberDefinition, error) {
+	members := []*ast.UnionMemberDefinition{}
 	for {
-		member, err := parseType(parser)
+		start := parser.Token.Start
+		description, err := parseDescription(parser)
+		if err != nil {
+			return nil, err
+		}
+		t, err := parseType(parser)
 		if err != nil {
 			return members, err
 		}
-		members = append(members, member)
+		annotations, err := parseAnnotations(parser)
+		if err != nil {
+			return nil, err
+		}
+		members = append(members, ast.NewUnionMemberDefinition(
+			loc(parser, start),
+			description,
+			t,
+			annotations,
+		))
 		if skp, err := skip(parser, lexer.TokenKind[lexer.PIPE]); err != nil {
 			return nil, err
 		} else if !skp {

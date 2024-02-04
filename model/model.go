@@ -179,15 +179,27 @@ func DefaultField() Field {
 
 // Unions types denote that a type can have one of several representations.
 type Union struct {
-	Name        string       `json:"name" yaml:"name" msgpack:"name"`
-	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
-	Types       []TypeRef    `json:"types" yaml:"types" msgpack:"types"`
-	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
+	Name        string        `json:"name" yaml:"name" msgpack:"name"`
+	Description *string       `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
+	Members     []UnionMember `json:"members" yaml:"members" msgpack:"members"`
+	Annotations []Annotation  `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
 }
 
 // DefaultUnion returns a `Union` struct populated with its default values.
 func DefaultUnion() Union {
 	return Union{}
+}
+
+type UnionMember struct {
+	Description *string      `json:"description,omitempty" yaml:"description,omitempty" msgpack:"description,omitempty"`
+	Type        TypeRef      `json:"type" yaml:"type" msgpack:"type"`
+	Annotations []Annotation `json:"annotations,omitempty" yaml:"annotations,omitempty" msgpack:"annotations,omitempty"`
+}
+
+// DefaultUnionMember returns a `UnionMember` struct populated with its default
+// values.
+func DefaultUnionMember() UnionMember {
+	return UnionMember{}
 }
 
 // Enumerations (or enums) are a type that is constrained to a finite set of

@@ -1,5 +1,5 @@
 /*
-Copyright 2022 The Apex Authors.
+Copyright 2024 The Apex Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -317,21 +317,45 @@ type UnionDefinition struct {
 	Name        *Name        `json:"name"`
 	Description *StringValue `json:"description,omitempty"` // Optional
 	AnnotatedNode
-	Types []Type `json:"types"`
+	Members []*UnionMemberDefinition `json:"types"`
 }
 
-func NewUnionDefinition(loc *Location, name *Name, description *StringValue, annotations []*Annotation, types []Type) *UnionDefinition {
+func NewUnionDefinition(loc *Location, name *Name, description *StringValue, annotations []*Annotation, members []*UnionMemberDefinition) *UnionDefinition {
 	return &UnionDefinition{
 		BaseNode:      BaseNode{kinds.UnionDefinition, loc},
 		Name:          name,
 		Description:   description,
 		AnnotatedNode: AnnotatedNode{annotations},
-		Types:         types,
+		Members:       members,
 	}
 }
 
 func (d *UnionDefinition) Accept(context Context, visitor Visitor) {
 	visitor.VisitUnion(context)
+	VisitAnnotations(context, visitor, d.Annotations)
+}
+
+// UnionMemberDefinition implements Node, Definition
+var _ Definition = (*UnionMemberDefinition)(nil)
+
+type UnionMemberDefinition struct {
+	BaseNode
+	Description *StringValue `json:"description,omitempty"` // Optional
+	Type        Type         `json:"type"`
+	AnnotatedNode
+}
+
+func NewUnionMemberDefinition(loc *Location, description *StringValue, t Type, annotations []*Annotation) *UnionMemberDefinition {
+	return &UnionMemberDefinition{
+		BaseNode:      BaseNode{kinds.EnumValueDefinition, loc},
+		Description:   description,
+		Type:          t,
+		AnnotatedNode: AnnotatedNode{annotations},
+	}
+}
+
+func (d *UnionMemberDefinition) Accept(context Context, visitor Visitor) {
+	visitor.VisitUnionMember(context)
 	VisitAnnotations(context, visitor, d.Annotations)
 }
 
