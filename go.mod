@@ -1,6 +1,6 @@
 module github.com/apexlang/apex-go
 
-go 1.21
+go 1.22
 
 require (
 	github.com/CosmWasm/tinyjson v0.9.0

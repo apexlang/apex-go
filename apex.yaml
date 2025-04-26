@@ -13,12 +13,12 @@ generates:
   model/msgpack.go:
     module: 'jsr:@apexlang/codegen@^0.2.9/go'
     visitorClass: MsgPackVisitor
-  model/wapc.go:
-    module: 'jsr:@wapc/codegen@^0.1.1/tinygo'
-    visitorClass: ExportVisitor
-  cmd/wapc/main.go:
-    module: 'jsr:@wapc/codegen@^0.1.1/tinygo'
-    visitorClass: MainVisitor
-    config:
-      import: github.com/apexlang/apex-go/model
-      package: model
+  # model/wapc.go:
+  #   module: 'jsr:@wapc/codegen@^0.1.1/tinygo'
+  #   visitorClass: ExportVisitor
+  # cmd/wapc/main.go:
+  #   module: 'jsr:@wapc/codegen@^0.1.1/tinygo'
+  #   visitorClass: MainVisitor
+  #   config:
+  #     import: github.com/apexlang/apex-go/model
+  #     package: model
