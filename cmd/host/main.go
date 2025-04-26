@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	_ "embed"
 	"fmt"
 	"os"
@@ -28,9 +29,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	config := wazero.NewModuleConfig().
-		WithStdout(os.Stdout).WithStderr(os.Stderr)
 
 	// Create a new WebAssembly Runtime.
 	r := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfig().
@@ -62,6 +60,15 @@ func main() {
 		panic(err)
 	}
 	defer closer.Close(ctx)
+
+	config := wazero.NewModuleConfig().
+		WithStartFunctions("_initialize").
+		WithStdout(os.Stdout).
+		WithStderr(os.Stderr).
+		WithRandSource(rand.Reader).
+		WithSysNanosleep().
+		WithSysNanotime().
+		WithSysWalltime()
 
 	code, err := r.CompileModule(ctx, apexWasm)
 	if err != nil {
