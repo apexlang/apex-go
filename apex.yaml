@@ -4,20 +4,20 @@ config:
   module: github.com/apexlang/apex-go
 generates:
   model/model.go:
-    module: 'https://deno.land/x/apex_codegen@v0.1.10/go/mod.ts'
+    module: 'jsr:@apexlang/codegen@^0.2.9/go'
     visitorClass: InterfacesVisitor
     config:
       writeTypeInfo: false
     runAfter:
       - command: tinyjson -all model/model.go
   model/msgpack.go:
-    module: 'https://deno.land/x/apex_codegen@v0.1.10/go/mod.ts'
+    module: 'jsr:@apexlang/codegen@^0.2.9/go'
     visitorClass: MsgPackVisitor
   model/wapc.go:
-    module: 'https://deno.land/x/wapc_codegen@v0.0.6/tinygo/mod.ts'
+    module: 'jsr:@wapc/codegen@^0.1.1/tinygo'
     visitorClass: ExportVisitor
   cmd/wapc/main.go:
-    module: 'https://deno.land/x/wapc_codegen@v0.0.6/tinygo/mod.ts'
+    module: 'jsr:@wapc/codegen@^0.1.1/tinygo'
     visitorClass: MainVisitor
     config:
       import: github.com/apexlang/apex-go/model

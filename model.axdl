@@ -195,6 +195,7 @@ enum Scalar {
   DATETIME = 14
   ANY      = 15
   RAW      = 16
+  VALUE    = 17
 }
 
 type Named {

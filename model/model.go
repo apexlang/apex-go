@@ -457,6 +457,21 @@ func (e *DirectiveLocation) UnmarshalJSON(b []byte) error {
 	return e.FromString(str)
 }
 
+// MarshalYAML marshals the enum as a YAML string
+func (e DirectiveLocation) MarshalYAML() (any, error) {
+	return e.String(), nil
+}
+
+// UnmarshalYAML unmashals a quoted YAML string to the enum value
+func (e *DirectiveLocation) UnmarshalYAML(unmarshal func(any) error) error {
+	var str string
+	if err := unmarshal(&str); err != nil {
+		return err
+	}
+
+	return e.FromString(str)
+}
+
 type Scalar int32
 
 const (
@@ -476,6 +491,7 @@ const (
 	ScalarDatetime Scalar = 14
 	ScalarAny      Scalar = 15
 	ScalarRaw      Scalar = 16
+	ScalarValue    Scalar = 17
 )
 
 var toStringScalar = map[Scalar]string{
@@ -495,6 +511,7 @@ var toStringScalar = map[Scalar]string{
 	ScalarDatetime: "DATETIME",
 	ScalarAny:      "ANY",
 	ScalarRaw:      "RAW",
+	ScalarValue:    "VALUE",
 }
 
 var toIDScalar = map[string]Scalar{
@@ -514,6 +531,7 @@ var toIDScalar = map[string]Scalar{
 	"DATETIME": ScalarDatetime,
 	"ANY":      ScalarAny,
 	"RAW":      ScalarRaw,
+	"VALUE":    ScalarValue,
 }
 
 func (e Scalar) String() string {
@@ -545,6 +563,21 @@ func (e *Scalar) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
+	return e.FromString(str)
+}
+
+// MarshalYAML marshals the enum as a YAML string
+func (e Scalar) MarshalYAML() (any, error) {
+	return e.String(), nil
+}
+
+// UnmarshalYAML unmashals a quoted YAML string to the enum value
+func (e *Scalar) UnmarshalYAML(unmarshal func(any) error) error {
+	var str string
+	if err := unmarshal(&str); err != nil {
+		return err
+	}
+
 	return e.FromString(str)
 }
 
@@ -606,5 +639,20 @@ func (e *Kind) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
+	return e.FromString(str)
+}
+
+// MarshalYAML marshals the enum as a YAML string
+func (e Kind) MarshalYAML() (any, error) {
+	return e.String(), nil
+}
+
+// UnmarshalYAML unmashals a quoted YAML string to the enum value
+func (e *Kind) UnmarshalYAML(unmarshal func(any) error) error {
+	var str string
+	if err := unmarshal(&str); err != nil {
+		return err
+	}
+
 	return e.FromString(str)
 }

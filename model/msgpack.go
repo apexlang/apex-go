@@ -17,6 +17,7 @@ func (o *ParserParseArgs) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o ParserParseArgs
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -25,13 +26,14 @@ func (o *ParserParseArgs) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "source":
-			o.Source, err = decoder.ReadString()
+			_o.Source, err = decoder.ReadString()
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -60,6 +62,7 @@ func (o *ResolverResolveArgs) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o ResolverResolveArgs
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -68,15 +71,16 @@ func (o *ResolverResolveArgs) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "location":
-			o.Location, err = decoder.ReadString()
+			_o.Location, err = decoder.ReadString()
 		case "from":
-			o.From, err = decoder.ReadString()
+			_o.From, err = decoder.ReadString()
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -102,6 +106,7 @@ func (o *ParserResult) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o ParserResult
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -110,13 +115,13 @@ func (o *ParserResult) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "namespace":
-			o.Namespace, err = msgpack.DecodeNillable[Namespace](decoder)
+			_o.Namespace, err = msgpack.DecodeNillable[Namespace](decoder)
 		case "errors":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Errors = make([]Error, 0, listSize)
+			_o.Errors = make([]Error, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Error
@@ -124,7 +129,7 @@ func (o *ParserResult) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Errors = append(o.Errors, nonNilItem)
+				_o.Errors = append(_o.Errors, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -132,6 +137,7 @@ func (o *ParserResult) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -160,6 +166,7 @@ func (o *Error) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Error
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -168,13 +175,13 @@ func (o *Error) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "message":
-			o.Message, err = decoder.ReadString()
+			_o.Message, err = decoder.ReadString()
 		case "positions":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Positions = make([]uint32, 0, listSize)
+			_o.Positions = make([]uint32, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem uint32
@@ -182,14 +189,14 @@ func (o *Error) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Positions = append(o.Positions, nonNilItem)
+				_o.Positions = append(_o.Positions, nonNilItem)
 			}
 		case "locations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Locations = make([]Location, 0, listSize)
+			_o.Locations = make([]Location, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Location
@@ -197,7 +204,7 @@ func (o *Error) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Locations = append(o.Locations, nonNilItem)
+				_o.Locations = append(_o.Locations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -205,6 +212,7 @@ func (o *Error) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -238,6 +246,7 @@ func (o *Location) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Location
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -246,15 +255,16 @@ func (o *Location) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "line":
-			o.Line, err = decoder.ReadUint32()
+			_o.Line, err = decoder.ReadUint32()
 		case "column":
-			o.Column, err = decoder.ReadUint32()
+			_o.Column, err = decoder.ReadUint32()
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -280,6 +290,7 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Namespace
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -288,15 +299,15 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -304,14 +315,14 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		case "imports":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Imports = make([]Import, 0, listSize)
+			_o.Imports = make([]Import, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Import
@@ -319,14 +330,14 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Imports = append(o.Imports, nonNilItem)
+				_o.Imports = append(_o.Imports, nonNilItem)
 			}
 		case "directives":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Directives = make([]Directive, 0, listSize)
+			_o.Directives = make([]Directive, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Directive
@@ -334,14 +345,14 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Directives = append(o.Directives, nonNilItem)
+				_o.Directives = append(_o.Directives, nonNilItem)
 			}
 		case "aliases":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Aliases = make([]Alias, 0, listSize)
+			_o.Aliases = make([]Alias, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Alias
@@ -349,14 +360,14 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Aliases = append(o.Aliases, nonNilItem)
+				_o.Aliases = append(_o.Aliases, nonNilItem)
 			}
 		case "functions":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Functions = make([]Operation, 0, listSize)
+			_o.Functions = make([]Operation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Operation
@@ -364,14 +375,14 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Functions = append(o.Functions, nonNilItem)
+				_o.Functions = append(_o.Functions, nonNilItem)
 			}
 		case "interfaces":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Interfaces = make([]Interface, 0, listSize)
+			_o.Interfaces = make([]Interface, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Interface
@@ -379,14 +390,14 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Interfaces = append(o.Interfaces, nonNilItem)
+				_o.Interfaces = append(_o.Interfaces, nonNilItem)
 			}
 		case "types":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Types = make([]Type, 0, listSize)
+			_o.Types = make([]Type, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Type
@@ -394,14 +405,14 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Types = append(o.Types, nonNilItem)
+				_o.Types = append(_o.Types, nonNilItem)
 			}
 		case "unions":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Unions = make([]Union, 0, listSize)
+			_o.Unions = make([]Union, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Union
@@ -409,7 +420,7 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Unions = append(o.Unions, nonNilItem)
+				_o.Unions = append(_o.Unions, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -417,6 +428,7 @@ func (o *Namespace) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -482,6 +494,7 @@ func (o *Import) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Import
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -490,15 +503,15 @@ func (o *Import) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "all":
-			o.All, err = decoder.ReadBool()
+			_o.All, err = decoder.ReadBool()
 		case "names":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Names = make([]ImportRef, 0, listSize)
+			_o.Names = make([]ImportRef, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem ImportRef
@@ -506,16 +519,16 @@ func (o *Import) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Names = append(o.Names, nonNilItem)
+				_o.Names = append(_o.Names, nonNilItem)
 			}
 		case "from":
-			o.From, err = decoder.ReadString()
+			_o.From, err = decoder.ReadString()
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -523,7 +536,7 @@ func (o *Import) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -531,6 +544,7 @@ func (o *Import) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -568,6 +582,7 @@ func (o *ImportRef) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o ImportRef
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -576,15 +591,16 @@ func (o *ImportRef) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "as":
-			o.As, err = decoder.ReadNillableString()
+			_o.As, err = decoder.ReadNillableString()
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -610,6 +626,7 @@ func (o *Type) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Type
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -618,15 +635,15 @@ func (o *Type) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "fields":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Fields = make([]Field, 0, listSize)
+			_o.Fields = make([]Field, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Field
@@ -634,14 +651,14 @@ func (o *Type) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Fields = append(o.Fields, nonNilItem)
+				_o.Fields = append(_o.Fields, nonNilItem)
 			}
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -649,7 +666,7 @@ func (o *Type) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -657,6 +674,7 @@ func (o *Type) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -692,6 +710,7 @@ func (o *Interface) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Interface
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -700,15 +719,15 @@ func (o *Interface) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "operations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Operations = make([]Operation, 0, listSize)
+			_o.Operations = make([]Operation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Operation
@@ -716,14 +735,14 @@ func (o *Interface) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Operations = append(o.Operations, nonNilItem)
+				_o.Operations = append(_o.Operations, nonNilItem)
 			}
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -731,7 +750,7 @@ func (o *Interface) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -739,6 +758,7 @@ func (o *Interface) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -774,6 +794,7 @@ func (o *Alias) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Alias
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -782,17 +803,17 @@ func (o *Alias) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "type":
-			o.Type, err = msgpack.Decode[TypeRef](decoder)
+			_o.Type, err = msgpack.Decode[TypeRef](decoder)
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -800,7 +821,7 @@ func (o *Alias) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -808,6 +829,7 @@ func (o *Alias) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -840,6 +862,7 @@ func (o *Operation) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Operation
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -848,15 +871,15 @@ func (o *Operation) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "parameters":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Parameters = make([]Parameter, 0, listSize)
+			_o.Parameters = make([]Parameter, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Parameter
@@ -864,18 +887,18 @@ func (o *Operation) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Parameters = append(o.Parameters, nonNilItem)
+				_o.Parameters = append(_o.Parameters, nonNilItem)
 			}
 		case "unary":
-			o.Unary, err = msgpack.DecodeNillable[Parameter](decoder)
+			_o.Unary, err = msgpack.DecodeNillable[Parameter](decoder)
 		case "returns":
-			o.Returns, err = msgpack.DecodeNillable[TypeRef](decoder)
+			_o.Returns, err = msgpack.DecodeNillable[TypeRef](decoder)
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -883,7 +906,7 @@ func (o *Operation) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -891,6 +914,7 @@ func (o *Operation) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -934,6 +958,7 @@ func (o *Parameter) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Parameter
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -942,19 +967,19 @@ func (o *Parameter) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "type":
-			o.Type, err = msgpack.Decode[TypeRef](decoder)
+			_o.Type, err = msgpack.Decode[TypeRef](decoder)
 		case "defaultValue":
-			o.DefaultValue, err = msgpack.DecodeNillable[Value](decoder)
+			_o.DefaultValue, err = msgpack.DecodeNillable[Value](decoder)
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -962,7 +987,7 @@ func (o *Parameter) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -970,6 +995,7 @@ func (o *Parameter) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1008,6 +1034,7 @@ func (o *Field) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Field
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1016,19 +1043,19 @@ func (o *Field) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "type":
-			o.Type, err = msgpack.Decode[TypeRef](decoder)
+			_o.Type, err = msgpack.Decode[TypeRef](decoder)
 		case "defaultValue":
-			o.DefaultValue, err = msgpack.DecodeNillable[Value](decoder)
+			_o.DefaultValue, err = msgpack.DecodeNillable[Value](decoder)
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -1036,7 +1063,7 @@ func (o *Field) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1044,6 +1071,7 @@ func (o *Field) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1082,6 +1110,7 @@ func (o *Union) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Union
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1090,15 +1119,15 @@ func (o *Union) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "members":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Members = make([]UnionMember, 0, listSize)
+			_o.Members = make([]UnionMember, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem UnionMember
@@ -1106,14 +1135,14 @@ func (o *Union) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Members = append(o.Members, nonNilItem)
+				_o.Members = append(_o.Members, nonNilItem)
 			}
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -1121,7 +1150,7 @@ func (o *Union) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1129,6 +1158,7 @@ func (o *Union) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1164,6 +1194,7 @@ func (o *UnionMember) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o UnionMember
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1172,15 +1203,15 @@ func (o *UnionMember) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "type":
-			o.Type, err = msgpack.Decode[TypeRef](decoder)
+			_o.Type, err = msgpack.Decode[TypeRef](decoder)
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -1188,7 +1219,7 @@ func (o *UnionMember) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1196,6 +1227,7 @@ func (o *UnionMember) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1226,6 +1258,7 @@ func (o *Enum) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Enum
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1234,15 +1267,15 @@ func (o *Enum) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "values":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Values = make([]EnumValue, 0, listSize)
+			_o.Values = make([]EnumValue, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem EnumValue
@@ -1250,14 +1283,14 @@ func (o *Enum) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Values = append(o.Values, nonNilItem)
+				_o.Values = append(_o.Values, nonNilItem)
 			}
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -1265,7 +1298,7 @@ func (o *Enum) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1273,6 +1306,7 @@ func (o *Enum) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1308,6 +1342,7 @@ func (o *EnumValue) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o EnumValue
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1316,19 +1351,19 @@ func (o *EnumValue) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "index":
-			o.Index, err = decoder.ReadUint64()
+			_o.Index, err = decoder.ReadUint64()
 		case "display":
-			o.Display, err = decoder.ReadNillableString()
+			_o.Display, err = decoder.ReadNillableString()
 		case "annotations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Annotations = make([]Annotation, 0, listSize)
+			_o.Annotations = make([]Annotation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Annotation
@@ -1336,7 +1371,7 @@ func (o *EnumValue) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Annotations = append(o.Annotations, nonNilItem)
+				_o.Annotations = append(_o.Annotations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1344,6 +1379,7 @@ func (o *EnumValue) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1378,6 +1414,7 @@ func (o *Directive) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Directive
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1386,15 +1423,15 @@ func (o *Directive) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "description":
-			o.Description, err = decoder.ReadNillableString()
+			_o.Description, err = decoder.ReadNillableString()
 		case "parameters":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Parameters = make([]Parameter, 0, listSize)
+			_o.Parameters = make([]Parameter, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Parameter
@@ -1402,14 +1439,14 @@ func (o *Directive) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Parameters = append(o.Parameters, nonNilItem)
+				_o.Parameters = append(_o.Parameters, nonNilItem)
 			}
 		case "locations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Locations = make([]DirectiveLocation, 0, listSize)
+			_o.Locations = make([]DirectiveLocation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem DirectiveLocation
@@ -1417,14 +1454,14 @@ func (o *Directive) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Locations = append(o.Locations, nonNilItem)
+				_o.Locations = append(_o.Locations, nonNilItem)
 			}
 		case "require":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Require = make([]DirectiveRequire, 0, listSize)
+			_o.Require = make([]DirectiveRequire, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem DirectiveRequire
@@ -1432,7 +1469,7 @@ func (o *Directive) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Require = append(o.Require, nonNilItem)
+				_o.Require = append(_o.Require, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1440,6 +1477,7 @@ func (o *Directive) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1480,6 +1518,7 @@ func (o *DirectiveRequire) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o DirectiveRequire
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1488,13 +1527,13 @@ func (o *DirectiveRequire) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "directive":
-			o.Directive, err = decoder.ReadString()
+			_o.Directive, err = decoder.ReadString()
 		case "locations":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Locations = make([]DirectiveLocation, 0, listSize)
+			_o.Locations = make([]DirectiveLocation, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem DirectiveLocation
@@ -1502,7 +1541,7 @@ func (o *DirectiveRequire) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Locations = append(o.Locations, nonNilItem)
+				_o.Locations = append(_o.Locations, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1510,6 +1549,7 @@ func (o *DirectiveRequire) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1538,6 +1578,7 @@ func (o *Annotation) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Annotation
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1546,13 +1587,13 @@ func (o *Annotation) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "arguments":
 			listSize, err := decoder.ReadArraySize()
 			if err != nil {
 				return err
 			}
-			o.Arguments = make([]Argument, 0, listSize)
+			_o.Arguments = make([]Argument, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Argument
@@ -1560,7 +1601,7 @@ func (o *Annotation) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Arguments = append(o.Arguments, nonNilItem)
+				_o.Arguments = append(_o.Arguments, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1568,6 +1609,7 @@ func (o *Annotation) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1596,6 +1638,7 @@ func (o *Argument) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Argument
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1604,15 +1647,16 @@ func (o *Argument) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "value":
-			o.Value, err = msgpack.Decode[Value](decoder)
+			_o.Value, err = msgpack.Decode[Value](decoder)
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1638,6 +1682,7 @@ func (o *Named) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Named
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1646,15 +1691,16 @@ func (o *Named) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "kind":
-			o.Kind, err = convert.Numeric[Kind](decoder.ReadInt32())
+			_o.Kind, err = convert.Numeric[Kind](decoder.ReadInt32())
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1680,6 +1726,7 @@ func (o *List) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o List
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1688,13 +1735,14 @@ func (o *List) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "type":
-			o.Type, err = msgpack.Decode[TypeRef](decoder)
+			_o.Type, err = msgpack.Decode[TypeRef](decoder)
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1718,6 +1766,7 @@ func (o *Map) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Map
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1726,15 +1775,16 @@ func (o *Map) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "keyType":
-			o.KeyType, err = msgpack.Decode[TypeRef](decoder)
+			_o.KeyType, err = msgpack.Decode[TypeRef](decoder)
 		case "valueType":
-			o.ValueType, err = msgpack.Decode[TypeRef](decoder)
+			_o.ValueType, err = msgpack.Decode[TypeRef](decoder)
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1760,6 +1810,7 @@ func (o *Stream) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Stream
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1768,13 +1819,14 @@ func (o *Stream) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "type":
-			o.Type, err = msgpack.Decode[TypeRef](decoder)
+			_o.Type, err = msgpack.Decode[TypeRef](decoder)
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1798,6 +1850,7 @@ func (o *Optional) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Optional
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1806,13 +1859,14 @@ func (o *Optional) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "type":
-			o.Type, err = msgpack.Decode[TypeRef](decoder)
+			_o.Type, err = msgpack.Decode[TypeRef](decoder)
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1836,6 +1890,7 @@ func (o *Reference) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Reference
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1844,13 +1899,14 @@ func (o *Reference) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1874,6 +1930,7 @@ func (o *ListValue) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o ListValue
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1886,7 +1943,7 @@ func (o *ListValue) Decode(decoder msgpack.Reader) error {
 			if err != nil {
 				return err
 			}
-			o.Values = make([]Value, 0, listSize)
+			_o.Values = make([]Value, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem Value
@@ -1894,7 +1951,7 @@ func (o *ListValue) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Values = append(o.Values, nonNilItem)
+				_o.Values = append(_o.Values, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1902,6 +1959,7 @@ func (o *ListValue) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1928,6 +1986,7 @@ func (o *ObjectValue) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o ObjectValue
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1940,7 +1999,7 @@ func (o *ObjectValue) Decode(decoder msgpack.Reader) error {
 			if err != nil {
 				return err
 			}
-			o.Fields = make([]ObjectField, 0, listSize)
+			_o.Fields = make([]ObjectField, 0, listSize)
 			for listSize > 0 {
 				listSize--
 				var nonNilItem ObjectField
@@ -1948,7 +2007,7 @@ func (o *ObjectValue) Decode(decoder msgpack.Reader) error {
 				if err != nil {
 					return err
 				}
-				o.Fields = append(o.Fields, nonNilItem)
+				_o.Fields = append(_o.Fields, nonNilItem)
 			}
 		default:
 			err = decoder.Skip()
@@ -1956,6 +2015,7 @@ func (o *ObjectValue) Decode(decoder msgpack.Reader) error {
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -1982,6 +2042,7 @@ func (o *ObjectField) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o ObjectField
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -1990,15 +2051,16 @@ func (o *ObjectField) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "name":
-			o.Name, err = decoder.ReadString()
+			_o.Name, err = decoder.ReadString()
 		case "value":
-			o.Value, err = msgpack.Decode[Value](decoder)
+			_o.Value, err = msgpack.Decode[Value](decoder)
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -2024,6 +2086,7 @@ func (o *TypeRef) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o TypeRef
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -2032,23 +2095,24 @@ func (o *TypeRef) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "Scalar":
-			o.Scalar, err = convert.NillableNumeric[Scalar](decoder.ReadNillableInt32())
+			_o.Scalar, err = convert.NillableNumeric[Scalar](decoder.ReadNillableInt32())
 		case "Named":
-			o.Named, err = msgpack.DecodeNillable[Named](decoder)
+			_o.Named, err = msgpack.DecodeNillable[Named](decoder)
 		case "List":
-			o.List, err = msgpack.DecodeNillable[List](decoder)
+			_o.List, err = msgpack.DecodeNillable[List](decoder)
 		case "Map":
-			o.Map, err = msgpack.DecodeNillable[Map](decoder)
+			_o.Map, err = msgpack.DecodeNillable[Map](decoder)
 		case "Stream":
-			o.Stream, err = msgpack.DecodeNillable[Stream](decoder)
+			_o.Stream, err = msgpack.DecodeNillable[Stream](decoder)
 		case "Optional":
-			o.Optional, err = msgpack.DecodeNillable[Optional](decoder)
+			_o.Optional, err = msgpack.DecodeNillable[Optional](decoder)
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil
@@ -2106,6 +2170,7 @@ func (o *Value) Decode(decoder msgpack.Reader) error {
 		return err
 	}
 
+	var _o Value
 	for numFields > 0 {
 		numFields--
 		field, err := decoder.ReadString()
@@ -2114,25 +2179,26 @@ func (o *Value) Decode(decoder msgpack.Reader) error {
 		}
 		switch field {
 		case "bool":
-			o.Bool, err = decoder.ReadNillableBool()
+			_o.Bool, err = decoder.ReadNillableBool()
 		case "string":
-			o.String, err = decoder.ReadNillableString()
+			_o.String, err = decoder.ReadNillableString()
 		case "i64":
-			o.I64, err = decoder.ReadNillableInt64()
+			_o.I64, err = decoder.ReadNillableInt64()
 		case "f64":
-			o.F64, err = decoder.ReadNillableFloat64()
+			_o.F64, err = decoder.ReadNillableFloat64()
 		case "Reference":
-			o.Reference, err = msgpack.DecodeNillable[Reference](decoder)
+			_o.Reference, err = msgpack.DecodeNillable[Reference](decoder)
 		case "ListValue":
-			o.ListValue, err = msgpack.DecodeNillable[ListValue](decoder)
+			_o.ListValue, err = msgpack.DecodeNillable[ListValue](decoder)
 		case "ObjectValue":
-			o.ObjectValue, err = msgpack.DecodeNillable[ObjectValue](decoder)
+			_o.ObjectValue, err = msgpack.DecodeNillable[ObjectValue](decoder)
 		default:
 			err = decoder.Skip()
 		}
 		if err != nil {
 			return err
 		}
+		*o = _o
 	}
 
 	return nil

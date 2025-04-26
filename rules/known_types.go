@@ -43,8 +43,8 @@ var builtInTypeNames = map[string]struct{}{
 	"datetime": {},
 	"bytes":    {},
 	"any":      {},
-	"value":    {},
 	"raw":      {},
+	"value":    {},
 }
 
 func (c *knownTypes) VisitAlias(context ast.Context) {
