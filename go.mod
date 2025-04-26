@@ -6,7 +6,7 @@ require (
 	github.com/CosmWasm/tinyjson v0.9.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/tetratelabs/tinymem v0.1.0
-	github.com/wapc/tinygo-msgpack v0.1.6
+	github.com/wapc/tinygo-msgpack v0.1.8
 	github.com/wapc/wapc-guest-tinygo v0.3.3
 )
 

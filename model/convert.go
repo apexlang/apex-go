@@ -44,6 +44,7 @@ var scalars = map[string]Scalar{
 	"datetime": ScalarDatetime,
 	"any":      ScalarAny,
 	"raw":      ScalarRaw,
+	"value":    ScalarValue,
 }
 
 type Converter struct {

@@ -6,7 +6,8 @@ import (
 	"github.com/apexlang/apex-go/model"
 )
 
-func main() {
+//go:wasmexport wapc_init
+func Initialize() {
 	// Create providers
 	resolverProvider := model.NewResolver()
 

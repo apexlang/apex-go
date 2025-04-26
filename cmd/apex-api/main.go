@@ -27,16 +27,13 @@ import (
 	"github.com/apexlang/apex-go/rules"
 )
 
-// main is required for TinyGo to compile to Wasm.
-func main() {}
-
 //go:wasm-module apex
 //go:export resolve
-func resolve(
+func Resolve(
 	locationPtr uintptr, locationSize uint32,
 	fromPtr uintptr, fromSize uint32) uint64
 
-//export parse
+//go:wasmexport parse
 func Parse(ptr uintptr, size uint32) (ptrSize uint64) {
 	source := tinymem.PtrToString(ptr, size)
 
@@ -47,7 +44,7 @@ func Parse(ptr uintptr, size uint32) (ptrSize uint64) {
 			Resolver: func(location, from string) (string, error) {
 				locationPtr, locationSize := tinymem.StringToPtr(location)
 				fromPtr, fromSize := tinymem.StringToPtr(from)
-				ptrsize := resolve(
+				ptrsize := Resolve(
 					locationPtr, locationSize,
 					fromPtr, fromSize)
 				if ptrsize == 0 {
